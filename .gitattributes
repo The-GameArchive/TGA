@@ -1,0 +1,6 @@
+ filter=lfs diff=lfs merge=lfs -text
+TGA/Roms/Nintendo[[:space:]]DS/Rhythm[[:space:]]Heaven/rom.nds filter=lfs diff=lfs merge=lfs -text
+TGA/Roms/Nintendo[[:space:]]DS/Pokemon[[:space:]]White/rom.nds filter=lfs diff=lfs merge=lfs -text
+TGA/Roms/Nintendo[[:space:]]DS/Pokemon[[:space:]]White[[:space:]]2/rom.nds filter=lfs diff=lfs merge=lfs -text
+TGA/Roms/Nintendo[[:space:]]DS/Pokemon[[:space:]]Black[[:space:]]2/rom.nds filter=lfs diff=lfs merge=lfs -text
+TGA/Roms/Nintendo[[:space:]]DS/Pokemon[[:space:]]Black/rom.nds filter=lfs diff=lfs merge=lfs -text
