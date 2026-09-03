@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soccer Bros</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; overflow: hidden; height: 100vh; width: 100vw; }
+#game-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: none; background: #000; }
+#error-box {
+  display: none; position: fixed; inset: 0;
+  align-items: center; justify-content: center;
+  background: #111; color: #ff9f9f;
+  font-family: sans-serif; font-size: 13px;
+  line-height: 1.7; text-align: center;
+  padding: 40px; white-space: pre-line;
+}
+</style>
+</head>
+<body>
+
+<div id="error-box"></div>
+<iframe id="game-frame" allow="autoplay; fullscreen"></iframe>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  ⚙  CONFIGURATION — edit these before opening the file
+// ════════════════════════════════════════════════════════════
+const GH_USER   = 'lkmdstreams';
+const GH_REPO   = 'sbros';
+const GH_BRANCH = 'main';
+const GAME_DIR  = '';
+
+// The original site — used so absolute URLs get rewritten correctly
+const GAME_ORIGIN = 'https://soccerbros.gg';
+// ════════════════════════════════════════════════════════════
+
+const CDN = `https://cdn.jsdelivr.net/gh/${GH_USER}/${GH_REPO}@${GH_BRANCH}/${GAME_DIR}`;
+
+const errorEl = document.getElementById('error-box');
+const frame    = document.getElementById('game-frame');
+
+// ── Helpers ─────────────────────────────────────────────────
+function setStatus(msg, pct) { /* no loader */ }
+
+function showError(msg) {
+  errorEl.style.display = 'flex';
+  errorEl.textContent   = '❌ ' + msg;
+}
+
+// Rewrite a single URL to point at CDN
+function rwURL(url) {
+  if (!url || typeof url !== 'string') return url;
+  const trimmed = url.trim();
+  if (!trimmed) return url;
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:') || trimmed.startsWith('#')) return url;
+  // Already on a safe external CDN (fonts, cloudflare, etc.)
+  if (/^https?:\/\/(fonts\.|cdn\.jsdelivr|cdnjs\.|ajax\.googleapis)/.test(trimmed)) return url;
+  // Absolute URL pointing to game origin
+  if (trimmed.startsWith(GAME_ORIGIN)) {
+    return CDN + trimmed.slice(GAME_ORIGIN.length).replace(/^\//, '');
+  }
+  // Protocol-relative
+  if (trimmed.startsWith('//')) {
+    const full = 'https:' + trimmed;
+    if (full.startsWith(GAME_ORIGIN)) return CDN + full.slice(GAME_ORIGIN.length).replace(/^\//, '');
+    return 'https:' + trimmed;
+  }
+  // Root-relative
+  if (trimmed.startsWith('/')) {
+    return CDN + trimmed.slice(1);
+  }
+  // Relative — leave alone (iframe blob URL context handles it, or it's already relative to CDN)
+  return url;
+}
+
+// ── Static HTML rewriter ─────────────────────────────────────
+// Rewrites src/href/action attributes and CSS url() values
+// in the fetched HTML string before injecting into iframe
+function rewriteHtml(html) {
+  return html
+    // src="..." href="..." action="..."  (double quotes)
+    .replace(/\b(src|href|action|data-src|poster)="([^"#][^"]*)"/gi,
+      (_, attr, val) => `${attr}="${rwURL(val)}"`)
+    // src='...' href='...'  (single quotes)
+    .replace(/\b(src|href|action|data-src|poster)='([^'#][^']*)'/gi,
+      (_, attr, val) => `${attr}='${rwURL(val)}'`)
+    // CSS url(...) inside <style> blocks or inline styles
+    .replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi,
+      (_, q, val) => `url(${q}${rwURL(val)}${q})`);
+}
+
+// ── Interceptor script (injected into iframe head) ───────────
+// Overrides fetch, XHR, Image, Worker, dynamic script src
+// so runtime-loaded assets also hit CDN
+function buildInterceptor() {
+  // We JSON-encode so the strings are safely embedded in the script
+  const cdnJson    = JSON.stringify(CDN);
+  const originJson = JSON.stringify(GAME_ORIGIN);
+
+  return `<script>(function(){
+var CDN    = ${cdnJson};
+var ORIGIN = ${originJson};
+
+/* ── localStorage / sessionStorage polyfill (blob:null has no storage) ── */
+function makeStorage(){
+  var s={};
+  return {
+    getItem:function(k){return s.hasOwnProperty(k)?s[k]:null;},
+    setItem:function(k,v){s[k]=String(v);},
+    removeItem:function(k){delete s[k];},
+    clear:function(){s={};},
+    key:function(i){return Object.keys(s)[i]||null;},
+    get length(){return Object.keys(s).length;}
+  };
+}
+try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}
+catch(e){
+  try{Object.defineProperty(window,'localStorage',{get:function(){return makeStorage();},configurable:true});}catch(e2){}
+}
+try{sessionStorage.setItem('__t','1');sessionStorage.removeItem('__t');}
+catch(e){
+  try{Object.defineProperty(window,'sessionStorage',{get:function(){return makeStorage();},configurable:true});}catch(e2){}
+}
+
+/* ── URL rewriter ── */
+function rw(url){
+  if(!url||typeof url!=='string') return url;
+  var t=url.trim();
+  if(!t||t.length<2) return url;
+  if(t.startsWith('data:')||t.startsWith('blob:')||t.startsWith('#')||t.startsWith('javascript:')) return url;
+  if(/^https?:\\/\\/(fonts\\.|cdn\\.jsdelivr|cdnjs\\.|ajax\\.googleapis|firestore\\.googleapis|identitytoolkit|securetoken|www\\.gstatic|firebaseapp\\.com|firebase\\.google|googletagmanager|adinplay|doubleclick|googlesyndication)/.test(t)) return url;
+  if(t.startsWith(ORIGIN)) return CDN+t.slice(ORIGIN.length).replace(/^\\//, '');
+  if(t.startsWith('//')) return 'https:'+t;
+  if(t.startsWith('/')) return CDN+t.slice(1);
+  return url;
+}
+
+/* ── fetch ── */
+var _fetch=window.fetch;
+window.fetch=function(input,init){
+  try{
+    if(typeof input==='string') input=rw(input);
+    else if(input&&input.url) input=new Request(rw(input.url),input);
+  }catch(e){}
+  return _fetch.call(this,input,init);
+};
+
+/* ── XMLHttpRequest ── */
+var _open=XMLHttpRequest.prototype.open;
+XMLHttpRequest.prototype.open=function(m,u){
+  try{
+    var r=rw(u);
+    if(r&&/^https?:\\/\\//.test(r)) u=r;
+  }catch(e){}
+  return _open.apply(this,[m,u].concat(Array.prototype.slice.call(arguments,2)));
+};
+
+/* ── Image ── */
+var _iDesc=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,'src');
+if(_iDesc) Object.defineProperty(HTMLImageElement.prototype,'src',{
+  set:function(v){try{_iDesc.set.call(this,rw(v));}catch(e){_iDesc.set.call(this,v);}},
+  get:function(){return _iDesc.get.call(this);},configurable:true
+});
+
+/* ── Audio / Video ── */
+var _mDesc=Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,'src');
+if(_mDesc) Object.defineProperty(HTMLMediaElement.prototype,'src',{
+  set:function(v){try{_mDesc.set.call(this,rw(v));}catch(e){_mDesc.set.call(this,v);}},
+  get:function(){return _mDesc.get.call(this);},configurable:true
+});
+
+/* ── createElement (dynamic script/link tags) ── */
+var _ce=document.createElement.bind(document);
+document.createElement=function(tag){
+  var el=_ce.apply(document,arguments);
+  var t=(tag||'').toLowerCase();
+  if(t==='script'){
+    var d=Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype,'src');
+    if(d) Object.defineProperty(el,'src',{
+      set:function(v){try{d.set.call(this,rw(v));}catch(e){d.set.call(this,v);}},
+      get:function(){return d.get.call(this);},configurable:true
+    });
+  }
+  if(t==='link'){
+    var dh=Object.getOwnPropertyDescriptor(HTMLLinkElement.prototype,'href');
+    if(dh) Object.defineProperty(el,'href',{
+      set:function(v){try{dh.set.call(this,rw(v));}catch(e){dh.set.call(this,v);}},
+      get:function(){return dh.get.call(this);},configurable:true
+    });
+  }
+  return el;
+};
+
+/* ── appendChild / insertBefore — catch webpack chunk script tags ── */
+function patchAppend(proto, method) {
+  var orig = proto[method];
+  proto[method] = function(node) {
+    try {
+      if (node && node.tagName === 'SCRIPT' && node.src) {
+        var r = rw(node.src);
+        if (r && r !== node.src) node.src = r;
+      }
+    } catch(e) {}
+    return orig.apply(this, arguments);
+  };
+}
+patchAppend(Element.prototype, 'appendChild');
+patchAppend(Element.prototype, 'insertBefore');
+patchAppend(Node.prototype, 'appendChild');
+patchAppend(Node.prototype, 'insertBefore');
+
+/* ── Worker ── */
+if(window.Worker){
+  var _W=window.Worker;
+  window.Worker=function(url,opts){
+    try{ url=rw(url); }catch(e){}
+    return new _W(url,opts);
+  };
+  window.Worker.prototype=_W.prototype;
+}
+
+console.log('[SoccerBros Launcher] Interceptors active v2 ✓  CDN:',CDN);
+})();<\/script>`;
+}
+
+// ── Main launcher ────────────────────────────────────────────
+async function launch() {
+  try {
+    setStatus('Connecting to CDN...', 5);
+
+    const indexUrl = CDN + 'index.html';
+    let res;
+    try {
+      res = await fetch(indexUrl);
+    } catch (netErr) {
+      throw new Error(
+        'Network error fetching index.html.\n' +
+        'Check that GH_USER / GH_REPO are correct and the repo is PUBLIC.\n' +
+        '→ ' + indexUrl
+      );
+    }
+    if (!res.ok) {
+      throw new Error(
+        `index.html returned HTTP ${res.status}.\n` +
+        'Make sure index.html exists in your repo at the right path.\n' +
+        '→ ' + indexUrl
+      );
+    }
+
+    setStatus('Loading game data...', 35);
+    let html = await res.text();
+
+    setStatus('Patching asset paths...', 60);
+    html = rewriteHtml(html);
+
+    setStatus('Injecting runtime interceptors...', 75);
+
+    // ── Inject <base> tag FIRST so ALL relative URLs (including webpack chunks)
+    // resolve against CDN, not blob:null
+    const baseTag = `<base href="${CDN}">`;
+    const interceptor = buildInterceptor();
+    const headInject = baseTag + interceptor;
+
+    if (/<head[\s>]/i.test(html)) {
+      html = html.replace(/<head([^>]*)>/i, `<head$1>${headInject}`);
+    } else {
+      html = headInject + html;
+    }
+
+    setStatus('Kicking off...', 90);
+    const blob    = new Blob([html], { type: 'text/html' });
+    const blobURL = URL.createObjectURL(blob);
+    frame.src     = blobURL;
+
+    frame.onload = () => URL.revokeObjectURL(blobURL);
+
+    frame.onerror = () => showError('iframe failed to load the blob. Try a different browser.');
+
+  } catch (err) {
+    showError(err.message || String(err));
+    console.error('[SoccerBros Launcher] Error:', err);
+  }
+}
+
+launch();
+</script>
+
+</body>
+</html>

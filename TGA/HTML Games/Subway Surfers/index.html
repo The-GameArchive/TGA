@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui, viewport-fit=cover" />
+  <title>Subway Surfers Web</title>
+  <style>
+    body, html { margin:0; height:100%; background-color:#0b316b; overflow:hidden;
+      background-image:url('https://emulatoros.github.io/gfile/subway/assets/preload/splash.png');
+      background-repeat:no-repeat; background-position:center; }
+    #message { text-align:center; font-size:8px; font-family:"Verdana",sans-serif; color:#fff;
+      position:fixed; width:100%; z-index:9999; }
+    .dot { display:inline; margin-left:.2em; margin-right:.2em; position:relative; top:-1em;
+      font-size:3.5em; opacity:0; animation:showHideDot 2.5s ease-in-out infinite; }
+    .dot.one{animation-delay:.2s}.dot.two{animation-delay:.4s}.dot.three{animation-delay:.6s}
+    @keyframes showHideDot{0%{opacity:0}50%{opacity:1}60%{opacity:1}100%{opacity:0}}
+  </style>
+
+  <script>
+    const JSDVR = 'https://cdn.jsdelivr.net/gh/EmulatorOS/gfile@main/subway/';
+    const REMOTE = 'https://emulatoros.github.io/gfile/subway/';
+    const JS_SUBDIR = ['dependencies.bundle.js','index.js','loading.js','boot.js'];
+
+    const WORKER_PATCH = `
+const _R='${REMOTE}';
+function _f(u){
+  if(!u||u.startsWith('blob:')||u.startsWith('data:')||u.startsWith('http'))return u;
+  if(u.startsWith('file://')){
+    let d=decodeURIComponent(u).split('?')[0];
+    if(d.includes('/subway/'))return _R+d.split('/subway/').pop();
+    if(d.includes('/assets/'))return _R+'assets/'+d.split('/assets/').pop();
+    if(d.includes('/bundles/'))return _R+'bundles/'+d.split('/bundles/').pop();
+    return _R+d.split('/').pop();
+  }
+  return _R+u.replace(/^\\.?\\//,'').split('?')[0];
+}
+const _ox=XMLHttpRequest.prototype.open;
+XMLHttpRequest.prototype.open=function(m,u,...r){return _ox.call(this,m,_f(u),...r);};
+const _of=self.fetch;
+self.fetch=function(i,o){
+  if(typeof i==='string')i=_f(i);
+  return _of.call(this,i,o).then(r=>{
+    if(!r.ok&&r.status===404){const u=typeof i==='string'?i:'';
+      if(/\\.(webp|avif|png|jpg|woff2?|ttf)(\\?|$)/.test(u))
+        return new Response(new Uint8Array(0),{status:200,headers:{'Content-Type':'application/octet-stream'}});}
+    return r;});};
+`;
+
+    function fixUrl(url) {
+      if (!url) return url;
+      if (url.startsWith('blob:') || url.startsWith('data:')) return url;
+      if (url.startsWith('http')) return url;
+      if (url.startsWith('file://')) {
+        let d = decodeURIComponent(url).split('?')[0];
+        if (d.includes('/subway/')) return REMOTE + d.split('/subway/').pop();
+        if (d.includes('/assets/')) return REMOTE + 'assets/' + d.split('/assets/').pop();
+        if (d.includes('/bundles/')) return REMOTE + 'bundles/' + d.split('/bundles/').pop();
+        if (d.includes('/js/')) return REMOTE + 'js/' + d.split('/js/').pop();
+        return REMOTE + d.split('/').pop();
+      }
+      return REMOTE + url.replace(/^\.?\//, '').split('?')[0];
+    }
+
+    // Rewrite CSS content — fix @font-face url() values
+    function rewriteCSS(css) {
+      return css.replace(/url\(["']?([^"')]+)["']?\)/g, (match, url) => {
+        const fixed = fixUrl(url);
+        return `url("${fixed}")`;
+      });
+    }
+
+    // XHR
+    const _xhrOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(m, url, ...r) {
+      return _xhrOpen.call(this, m, fixUrl(url), ...r);
+    };
+
+    // Fetch
+    const _fetch = window.fetch;
+    window.fetch = function(input, init) {
+      if (typeof input === 'string') input = fixUrl(input);
+      return _fetch.call(this, input, init).then(resp => {
+        if (!resp.ok && resp.status === 404) {
+          const u = typeof input === 'string' ? input : '';
+          if (/\.(webp|avif|png|jpg|woff2?|ttf)(\?|$)/i.test(u))
+            return new Response(new Uint8Array(0),{status:200,headers:{'Content-Type':'application/octet-stream'}});
+        }
+        return resp;
+      });
+    };
+
+    // Image
+    const _imgSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+    Object.defineProperty(HTMLImageElement.prototype, 'src', {
+      get: _imgSrc.get,
+      set: function(val) { _imgSrc.set.call(this, fixUrl(val)); }
+    });
+
+    // Text node setter — catch when font URLs are set as text content of <style>
+    const _origCreateTextNode = document.createTextNode.bind(document);
+    document.createTextNode = function(data) {
+      if (typeof data === 'string' && data.includes('@font-face')) {
+        data = rewriteCSS(data);
+      }
+      return _origCreateTextNode(data);
+    };
+
+    // Intercept appendChild/insertBefore
+    // For <style> tags: rewrite CSS; for <script> tags: redirect src
+    function processChild(child) {
+      if (!child) return;
+      // Rewrite <style> tag content
+      if (child.tagName === 'STYLE') {
+        const css = child.textContent || child.innerHTML || '';
+        if (css.includes('@font-face') || css.includes('url(')) {
+          const rewritten = rewriteCSS(css);
+          if (rewritten !== css) {
+            child.textContent = rewritten;
+          }
+        }
+        return;
+      }
+      // Rewrite <script> src
+      if (child.tagName === 'SCRIPT' && child.src) {
+        const f = child.src.split('/').pop().split('?')[0];
+        if (JS_SUBDIR.includes(f)) child.src = JSDVR + 'js/' + f;
+        else if (f.startsWith('worker.')) child.src = JSDVR + 'js/workers/' + f;
+        else child.src = JSDVR + f;
+      }
+    }
+
+    const _ac = Node.prototype.appendChild;
+    Node.prototype.appendChild = function(child) {
+      processChild(child);
+      return _ac.call(this, child);
+    };
+    const _ib = Node.prototype.insertBefore;
+    Node.prototype.insertBefore = function(child, ref) {
+      processChild(child);
+      return _ib.call(this, child, ref);
+    };
+
+    // Also intercept Text node data setter (for when textContent is set after creation)
+    const _textData = Object.getOwnPropertyDescriptor(CharacterData.prototype, 'data');
+    Object.defineProperty(CharacterData.prototype, 'data', {
+      get: _textData.get,
+      set: function(val) {
+        if (typeof val === 'string' && val.includes('@font-face') && val.includes('file://')) {
+          val = rewriteCSS(val);
+        }
+        _textData.set.call(this, val);
+      }
+    });
+
+    // Intercept document.fonts.check to always return true so polling loop exits immediately
+    if (document.fonts) {
+      document.fonts.check = function() { return true; };
+      // Make document.fonts.ready resolve immediately
+      Object.defineProperty(document.fonts, 'ready', {
+        get: () => Promise.resolve(),
+        configurable: true
+      });
+    }
+
+    // Worker — inject interceptor into worker
+    const _Worker = window.Worker;
+    window.Worker = function(url, options) {
+      if (typeof url === 'string' && !url.startsWith('blob:') && !url.startsWith('http')) {
+        const f = url.split('/').pop().split('?')[0];
+        try {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', JSDVR + 'js/workers/' + f, false);
+          xhr.send();
+          if (xhr.status === 200) {
+            const blob = new Blob([WORKER_PATCH + '\n' + xhr.responseText], {type:'application/javascript'});
+            url = URL.createObjectURL(blob);
+          }
+        } catch(e) {}
+      }
+      return new _Worker(url, options);
+    };
+    window.Worker.prototype = _Worker.prototype;
+
+    // PokiSDK stub
+    window.PokiSDK = {
+      init:()=>Promise.resolve(), gameLoadingStart:()=>Promise.resolve(),
+      gameLoadingFinished:()=>Promise.resolve(), gameplayStart:()=>Promise.resolve(),
+      gameplayStop:()=>Promise.resolve(), happyTime:()=>Promise.resolve(),
+      commercialBreak:(cb)=>{if(cb)cb();return Promise.resolve();},
+      rewardedBreak:(cb)=>{if(cb)cb(true);return Promise.resolve(true);},
+      setDebug:()=>{}, getURLParam:()=>null, captureError:()=>{},
+      disableClickTrigger:()=>{}, isAdBlocked:()=>false,
+    };
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/gh/EmulatorOS/gfile@main/subway/poki-sdk.js"></script>
+</head>
+<body>
+  <script>
+    window.NOSW = true;
+    window.GAME_CONFIG = { pokiSdkDebug:false, leaderboard:'mockup', bundlesPath:'./bundles', quality:'high' };
+  </script>
+  <div id="message">
+    <h1>Loading</h1>
+    <h1 class="dot one">.</h1><h1 class="dot two">.</h1><h1 class="dot three">.</h1>
+  </div>
+  <script src="https://cdn.jsdelivr.net/gh/EmulatorOS/gfile@main/subway/js/loading.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/EmulatorOS/gfile@main/subway/js/boot.js"></script>
+</body>
+</html>
