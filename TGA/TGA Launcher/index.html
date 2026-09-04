@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── THEMES ── */
+:root{
+  --bg:#0a0a0f;--bg3:#16162a;--card:#12121e;--card2:#1a1a2e;
+  --a:#7c3aed;--a2:#a855f7;--neon:#c084fc;--glow:rgba(124,58,237,.35);
+  --tx:#e2e8f0;--mu:#64748b;--bo:rgba(124,58,237,.2);
+  --grid-color:rgba(124,58,237,.03);
+  --news-bg:rgba(124,58,237,.08);--news-border:rgba(124,58,237,.3);
+  --news-accent:#a855f7;
+}
+[data-theme="cyber"]{
+  --bg:#010a04;--bg3:#071a0e;--card:#081207;--card2:#0d1f0e;
+  --a:#00ff41;--a2:#39ff14;--neon:#7fff7f;--glow:rgba(0,255,65,.3);
+  --tx:#ccffcc;--mu:#4a7a50;--bo:rgba(0,255,65,.18);
+  --grid-color:rgba(0,255,65,.03);
+  --news-bg:rgba(0,255,65,.07);--news-border:rgba(0,255,65,.3);
+  --news-accent:#39ff14;
+}
+[data-theme="fire"]{
+  --bg:#0d0500;--bg3:#1f0c00;--card:#160800;--card2:#241000;
+  --a:#f97316;--a2:#fb923c;--neon:#fcd34d;--glow:rgba(249,115,22,.35);
+  --tx:#fef3c7;--mu:#78716c;--bo:rgba(249,115,22,.2);
+  --grid-color:rgba(249,115,22,.03);
+  --news-bg:rgba(249,115,22,.08);--news-border:rgba(249,115,22,.3);
+  --news-accent:#fb923c;
+}
+[data-theme="ocean"]{
+  --bg:#000d1a;--bg3:#001a33;--card:#001022;--card2:#00192e;
+  --a:#0ea5e9;--a2:#38bdf8;--neon:#7dd3fc;--glow:rgba(14,165,233,.3);
+  --tx:#e0f2fe;--mu:#475569;--bo:rgba(14,165,233,.2);
+  --grid-color:rgba(14,165,233,.03);
+  --news-bg:rgba(14,165,233,.08);--news-border:rgba(14,165,233,.3);
+  --news-accent:#38bdf8;
+}
+[data-theme="rose"]{
+  --bg:#0f000a;--bg3:#200015;--card:#18000f;--card2:#26001a;
+  --a:#e879f9;--a2:#f0abfc;--neon:#fde8ff;--glow:rgba(232,121,249,.3);
+  --tx:#fce7ff;--mu:#6b4875;--bo:rgba(232,121,249,.2);
+  --grid-color:rgba(232,121,249,.03);
+  --news-bg:rgba(232,121,249,.08);--news-border:rgba(232,121,249,.3);
+  --news-accent:#f0abfc;
+}
+[data-theme="matrix"]{
+  --bg:#000000;--bg3:#050505;--card:#050505;--card2:#0a0a0a;
+  --a:#00b300;--a2:#00e600;--neon:#33ff33;--glow:rgba(0,230,0,.3);
+  --tx:#d0ffd0;--mu:#3a5c3a;--bo:rgba(0,230,0,.15);
+  --grid-color:rgba(0,230,0,.025);
+  --news-bg:rgba(0,230,0,.06);--news-border:rgba(0,230,0,.25);
+  --news-accent:#00e600;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;transition:background .3s}
+
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--bo);padding:0 1.5rem;transition:border-color .3s}
+.hi{max-width:1800px;margin:0 auto;display:flex;align-items:center;gap:1.5rem;height:64px}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.35rem;letter-spacing:.2em;background:linear-gradient(135deg,var(--a2),var(--neon));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0;transition:all .3s}
+.logo span{-webkit-text-fill-color:rgba(255,255,255,.3);font-size:.7em;letter-spacing:.3em;margin-left:.4em;font-weight:400}
+.sw{flex:1;max-width:560px;position:relative}
+.sw svg{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--mu);width:17px;height:17px;pointer-events:none}
+#search{width:100%;background:var(--bg3);border:1px solid var(--bo);border-radius:10px;padding:.55rem .9rem .55rem 2.5rem;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:500;outline:none;transition:border-color .2s,box-shadow .2s,background .3s}
+#search::placeholder{color:var(--mu)}
+#search:focus{border-color:var(--a);box-shadow:0 0 0 3px var(--glow)}
+.cb{font-size:.82rem;color:var(--mu);flex-shrink:0}
+.cb strong{color:var(--neon);font-size:.95rem}
+.header-right{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+
+/* ── SETTINGS BUTTON ── */
+.settings-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;background:var(--bg3);border:1px solid var(--bo);color:var(--mu);cursor:pointer;transition:all .18s;flex-shrink:0}
+.settings-btn:hover{background:var(--card2);border-color:var(--a);color:var(--neon);box-shadow:0 0 12px var(--glow)}
+.settings-btn svg{width:18px;height:18px;transition:transform .4s}
+.settings-btn:hover svg{transform:rotate(60deg)}
+
+/* ── TABS ── */
+.tabs{position:sticky;top:64px;z-index:90;background:rgba(10,10,15,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--bo);padding:0 1.5rem;transition:border-color .3s}
+.ti{max-width:1800px;margin:0 auto;display:flex;gap:.2rem;padding:.5rem 0}
+.tab{display:flex;align-items:center;gap:.45rem;padding:.42rem 1.1rem;border-radius:8px;background:transparent;border:1px solid transparent;color:var(--mu);font-family:'Orbitron',monospace;font-size:.65rem;font-weight:700;letter-spacing:.12em;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.tab:hover{background:var(--bg3);color:var(--tx);border-color:var(--bo)}
+.tab.active{background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;box-shadow:0 0 18px var(--glow)}
+.tp{background:rgba(255,255,255,.15);border-radius:99px;padding:.08em .45em;font-size:.8em;font-family:'Rajdhani',sans-serif;font-weight:600}
+.tab svg{width:15px;height:15px}
+
+/* ── MAIN ── */
+main{position:relative;z-index:1;max-width:1800px;margin:0 auto;padding:1.5rem}
+
+/* ── ANNOUNCEMENTS BOX ── */
+.announcements{background:var(--news-bg);border:1px solid var(--news-border);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.25rem;position:relative;overflow:hidden;transition:background .3s,border-color .3s}
+.announcements::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--news-bg),transparent);pointer-events:none}
+.ann-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem}
+.ann-icon{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--a),var(--a2));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 10px var(--glow)}
+.ann-icon svg{width:15px;height:15px;color:#fff}
+.ann-title{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;letter-spacing:.15em;color:var(--news-accent);text-transform:uppercase}
+.ann-pulse{width:8px;height:8px;border-radius:50%;background:var(--news-accent);box-shadow:0 0 6px var(--news-accent);animation:pulse 2s infinite;flex-shrink:0;margin-left:auto}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.ann-items{display:flex;flex-direction:column;gap:.4rem}
+.ann-item{display:flex;align-items:flex-start;gap:.55rem;font-size:.88rem;font-weight:500;color:var(--tx);line-height:1.4}
+.ann-item::before{content:'▸';color:var(--news-accent);font-size:.75rem;margin-top:.1rem;flex-shrink:0}
+.ann-empty{font-size:.82rem;color:var(--mu);font-style:italic;font-family:'Rajdhani',sans-serif}
+.ann-date{font-size:.72rem;color:var(--mu);margin-left:auto;flex-shrink:0;white-space:nowrap}
+
+/* ── GAME GRID ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:.85rem}
+.card{background:var(--card);border:1px solid var(--bo);border-radius:13px;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:transform .16s,box-shadow .16s,border-color .16s,background .3s;animation:fi .22s ease both}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.card:hover{transform:translateY(-3px) scale(1.02);border-color:var(--a2);box-shadow:0 8px 28px var(--glow),0 0 0 1px rgba(168,85,247,.3);background:var(--card2)}
+.card:hover .ct img,.card:hover .ph{transform:scale(1.06)}
+.ct{aspect-ratio:4/3;overflow:hidden;position:relative;background:var(--bg3)}
+.ct img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .28s}
+.ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-weight:900;font-size:2.2rem;transition:transform .28s}
+.cr{position:absolute;top:7px;right:7px;font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.08em;padding:.18em .5em;border-radius:4px;font-weight:700;text-transform:uppercase;pointer-events:none}
+.cg{background:rgba(30,58,95,.92);color:#60a5fa;border:1px solid rgba(96,165,250,.25)}
+.ct2{background:rgba(26,58,26,.92);color:#4ade80;border:1px solid rgba(74,222,128,.25)}
+.ce{background:rgba(58,26,26,.92);color:#f87171;border:1px solid rgba(248,113,113,.25)}
+.ci{padding:.55rem .65rem .65rem}
+.cn{font-size:.8rem;font-weight:600;line-height:1.3;color:var(--tx);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.empty{grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--mu);font-family:'Orbitron',monospace;font-size:.8rem;letter-spacing:.1em}
+.ei{font-size:2.5rem;margin-bottom:1rem;opacity:.3}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--a);border-radius:99px}
+
+/* ── SETTINGS MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg3);border:1px solid var(--bo);border-radius:18px;padding:1.75rem;width:min(480px,92vw);max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.6);transform:translateY(16px) scale(.97);transition:transform .22s,background .3s,border-color .3s}
+.modal-overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.modal-title{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:900;letter-spacing:.15em;background:linear-gradient(135deg,var(--a2),var(--neon));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.modal-close{width:30px;height:30px;border-radius:7px;background:transparent;border:1px solid var(--bo);color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:1rem;line-height:1}
+.modal-close:hover{background:var(--card2);border-color:var(--a);color:var(--tx)}
+.section-label{font-family:'Orbitron',monospace;font-size:.6rem;font-weight:700;letter-spacing:.18em;color:var(--mu);text-transform:uppercase;margin-bottom:.6rem}
+.modal-section{margin-bottom:1.5rem}
+
+/* Theme picker */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.theme-card{border-radius:11px;border:2px solid transparent;padding:.65rem .5rem .55rem;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:.35rem;background:var(--card);position:relative}
+.theme-card:hover{border-color:var(--a);transform:translateY(-2px)}
+.theme-card.selected{border-color:var(--a2);box-shadow:0 0 16px var(--glow)}
+.theme-card.selected::after{content:'✓';position:absolute;top:5px;right:7px;font-size:.65rem;color:var(--neon);font-weight:700}
+.theme-swatch{width:100%;height:24px;border-radius:6px;margin-bottom:.1rem}
+.theme-name{font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.1em;color:var(--mu);text-transform:uppercase}
+
+/* Tab name input */
+.tab-name-row{display:flex;gap:.5rem}
+#tab-name-input{flex:1;background:var(--card);border:1px solid var(--bo);border-radius:9px;padding:.5rem .8rem;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:500;outline:none;transition:border-color .2s,box-shadow .2s}
+#tab-name-input:focus{border-color:var(--a);box-shadow:0 0 0 3px var(--glow)}
+.btn-apply{background:linear-gradient(135deg,var(--a),var(--a2));border:none;border-radius:9px;padding:.5rem 1rem;color:#fff;font-family:'Orbitron',monospace;font-size:.6rem;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn-apply:hover{box-shadow:0 0 16px var(--glow);filter:brightness(1.1)}
+
+
+</style>
+</head>
+<body>
+<header>
+<div class="hi">
+  <div class="logo" id="logo-text">TGA <span>LAUNCHER</span></div>
+  <div class="sw">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="Search games, tools and emulators..." autocomplete="off" spellcheck="false">
+  </div>
+  <div class="header-right">
+    <div class="cb">Showing <strong id="cn">0</strong></div>
+    <button class="settings-btn" id="settings-btn" title="Settings">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+</div>
+</header>
+
+<div class="tabs">
+<div class="ti">
+  <button class="tab active" data-f="all">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    All <span class="tp" id="pa">0</span>
+  </button>
+  <button class="tab" data-f="game">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01M7 12h.01M17 12h.01M12 7v10"/></svg>
+    Games <span class="tp" id="pg">0</span>
+  </button>
+  <button class="tab" data-f="tool">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    Tools <span class="tp" id="pt">0</span>
+  </button>
+  <button class="tab" data-f="emulator">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    Emulators <span class="tp" id="pe">0</span>
+  </button>
+</div>
+</div>
+
+<main>
+  <!-- Announcements Box -->
+  <div class="announcements" id="announcements-box">
+    <div class="ann-header">
+      <div class="ann-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <span class="ann-title">News &amp; Announcements</span>
+      <span class="ann-pulse"></span>
+    </div>
+    <div class="ann-items" id="ann-display">
+      <span class="ann-empty">No announcements yet — add some in Settings ⚙</span>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⚙ Settings</span>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+
+    <!-- Tab Name -->
+    <div class="modal-section">
+      <div class="section-label">Tab / Window Title</div>
+      <div class="tab-name-row">
+        <input type="text" id="tab-name-input" placeholder="e.g. TGA Launcher" maxlength="60">
+        <button class="btn-apply" id="apply-tab-name">Apply</button>
+      </div>
+    </div>
+
+    <!-- Theme -->
+    <div class="modal-section">
+      <div class="section-label">Theme</div>
+      <div class="theme-grid" id="theme-grid">
+        <div class="theme-card selected" data-theme="default">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#7c3aed,#c084fc)"></div>
+          <span class="theme-name">Purple Void</span>
+        </div>
+        <div class="theme-card" data-theme="cyber">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#00ff41,#39ff14)"></div>
+          <span class="theme-name">Cyber Neon</span>
+        </div>
+        <div class="theme-card" data-theme="fire">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#f97316,#fcd34d)"></div>
+          <span class="theme-name">Solar Fire</span>
+        </div>
+        <div class="theme-card" data-theme="ocean">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#0ea5e9,#7dd3fc)"></div>
+          <span class="theme-name">Ocean Deep</span>
+        </div>
+        <div class="theme-card" data-theme="rose">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#e879f9,#fde8ff)"></div>
+          <span class="theme-name">Midnight Rose</span>
+        </div>
+        <div class="theme-card" data-theme="matrix">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#003300,#00e600)"></div>
+          <span class="theme-name">Matrix</span>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════
+   GAME DATA
+══════════════════════════════ */
+const items=[
+  ['1 Date Danger','game','../HTML Games/1 Date Danger/index.html',''],
+  ['10 Minutes Till Dawn','game','../HTML Games/10 Minutes Till Dawn/index.html','img/430.png'],
+  ['12 Mini Battles','game','../HTML Games/12 Mini Battles/index.html','img/295.png'],
+  ['1v1.LoL','game','../HTML Games/1v1.LoL/index.html','img/58.png'],
+  ['2048','game','../HTML Games/2048/index.html','img/114.png'],
+  ['2048 Merge Run','game','../HTML Games/2048 Merge Run/index.html','img/375.png'],
+  ['3D Bolt Master','game','../HTML Games/3D Bolt Master/index.html',''],
+  ['3D Bowling','game','../HTML Games/3D Bowling/index.html','img/320.png'],
+  ['64 in 1 NES','game','../HTML Games/64 in 1 NES/index.html',''],
+  ['8 Ball Classic','game','../HTML Games/8 Ball Classic/index.html','img/146.png'],
+  ['8 Ball Pool','game','../HTML Games/8 Ball Pool/index.html','img/115.png'],
+  ['99 Balls','game','../HTML Games/99 Balls/index.html','img/431.png'],
+  ['A Bite at Freddy\'s','game','../HTML Games/A Bite at Freddy_s/index.html','img/258.png'],
+  ['A Dance of Fire and Ice','game','../HTML Games/A Dance of Fire and Ice/index.html','img/59.png'],
+  ['A Difficult Game About Climbing','game','../HTML Games/A Difficult Game About Climbing/index.html',''],
+  ['A Game About Feeding A Black Hole','game','../HTML Games/A Game About Feeding A Black Hole/index.html',''],
+  ['A Small World Cup','game','../HTML Games/A Small World Cup/index.html','img/435.png'],
+  ['Abandoned','game','../HTML Games/Abandoned/index.html','img/432.png'],
+  ['Achievement Unlocked','game','../HTML Games/Achievement Unlocked/index.html','img/60.png'],
+  ['Achievement Unlocked 2','game','../HTML Games/Achievement Unlocked 2/index.html','img/61.png'],
+  ['Achievement Unlocked 3','game','../HTML Games/Achievement Unlocked 3/index.html','img/62.png'],
+  ['Adventure Capatalist','game','../HTML Games/Adventure Capatalist/index.html','img/354.png'],
+  ['Adventure Drivers','game','../HTML Games/Adventure Drivers/index.html','img/443.png'],
+  ['Ages of Conflict','game','../HTML Games/Ages of Conflict/index.html','img/444.png'],
+  ['Alien Hominid','game','../HTML Games/Alien Hominid/index.html','img/304.png'],
+  ['Amanda the Adventurer','game','../HTML Games/Amanda the Adventurer/index.html','img/450.png'],
+  ['Amaze','game','../HTML Games/Amaze/index.html','img/26.png'],
+  ['Andy\'s Apple Farm','game','../HTML Games/Andy\'s Apple Farm/index.html','img/426.png'],
+  ['Angry Birds','game','../HTML Games/Angry Birds/index.html','img/63.png'],
+  ['Angry Birds Chrome','game','../HTML Games/Angry Birds Chrome/index.html','img/316.png'],
+  ['Angry Birds Showdown','game','../HTML Games/Angry Birds Showdown/index.html','img/147.png'],
+  ['Antonblast','game','../HTML Games/Antonblast/index.html',''],
+  ['Apes vs Helium','game','../HTML Games/Apes vs Helium/index.html',''],
+  ['Aquapark.io','game','../HTML Games/Aquapark.io/index.html','img/448.png'],
+  ['Archery World Tour','game','../HTML Games/Archery World Tour/index.html','img/148.png'],
+  ['Arthur\'s Nightmare','game','../HTML Games/Arthur_s Nightmare/index.html',''],
+  ['Attack Hole','game','../HTML Games/Attack Hole/index.html','img/13.png'],
+  ['Aviamasters','game','../HTML Games/Aviamasters/index.html','img/552.png'],
+  ['Awesome Tanks','game','../HTML Games/Awesome Tanks/index.html','img/436.png'],
+  ['Awesome Tanks 2','game','../HTML Games/Awesome Tanks 2/index.html','img/438.png'],
+  ['BERGENTRUCK 201x','game','../HTML Games/BERGENTRUCK 201x/index.html','img/455.png'],
+  ['BFDIA 5b','game','../HTML Games/BFDIA 5b/index.html',''],
+  ['BFDIA 5b 530','game','../HTML Games/BFDIA 5b 530/index.html',''],
+  ['BLOODMONEY!','game','../HTML Games/BLOODMONEY!/index.html','img/454.png'],
+  ['Backrooms','game','../HTML Games/Backrooms/index.html','img/64.png'],
+  ['Bacon May Die','game','../HTML Games/Bacon May Die/index.html','img/268.png'],
+  ['Bad Ice Cream','game','../HTML Games/Bad Ice Cream/index.html','img/269.png'],
+  ['Bad Ice Cream 2','game','../HTML Games/Bad Ice Cream 2/index.html','img/270.png'],
+  ['Bad Ice Cream 3','game','../HTML Games/Bad Ice Cream 3/index.html','img/271.png'],
+  ['Bad Monday Simulator','game','../HTML Games/Bad Monday Simulator/index.html','img/522.png'],
+  ['Bad Parenting 1','game','../HTML Games/Bad Parenting 1/index.html','img/166.png'],
+  ['Bad Piggies','game','../HTML Games/Bad Piggies/index.html',''],
+  ['Bad Time Simulator','game','../HTML Games/Bad Time Simulator/index.html','img/472.png'],
+  ['Baldi\'s Basics Classic Remastered','game','../HTML Games/Baldi_s Basics Classic Remastered/index.html','img/466.png'],
+  ['Baldi\'s Basics Plus','game','../HTML Games/Baldi_s Basics Plus/index.html','img/467.png'],
+  ['Baldis Basics','game','../HTML Games/Baldis Basics/index.html','img/65.png'],
+  ['Ball Blast','game','../HTML Games/Ball Blast/index.html','img/149.png'],
+  ['Bank Robbery','game','../HTML Games/Bank Robbery/index.html',''],
+  ['Bank Robbery 2','game','../HTML Games/Bank Robbery 2/index.html','img/439.png'],
+  ['Bank Robbery 3','game','../HTML Games/Bank Robbery 3/index.html',''],
+  ['Bart Bash','game','../HTML Games/Bart Bash/index.html',''],
+  ['Bart Blast','game','../HTML Games/Bart Blast/index.html',''],
+  ['Baseball Bros','game','../HTML Games/Baseball Bros/index.html','img/547.png'],
+  ['Basket Battle','game','../HTML Games/Basket Battle/index.html','img/25.png'],
+  ['Basket Bros','game','../HTML Games/Basket Bros/index.html','img/285.png'],
+  ['Basket Random','game','../HTML Games/Basket Random/index.html','img/66.png'],
+  ['Basketball Frvr','game','../HTML Games/Basketball Frvr/index.html','img/28.png'],
+  ['Basketball Stars','game','../HTML Games/Basketball Stars/index.html','img/272.png'],
+  ['Battleship','game','../HTML Games/Battleship/index.html',''],
+  ['Bazooka Boy','game','../HTML Games/Bazooka Boy/index.html','img/29.png'],
+  ['beatblock','game','../HTML Games/beatblock/index.html',''],
+  ['Bendy and the Ink Machine','game','../HTML Games/Bendy and the Ink Machine/index.html','img/215.png'],
+  ['Big ICE Tower Tiny Square','game','../HTML Games/Big ICE Tower Tiny Square/index.html','img/69.png'],
+  ['Big NEON Tower Tiny Square','game','../HTML Games/Big NEON Tower Tiny Square/index.html','img/68.png'],
+  ['Big Tower Tiny Square','game','../HTML Games/Big Tower Tiny Square/index.html','img/67.png'],
+  ['Big Tower Tiny Square 2','game','../HTML Games/Big Tower Tiny Square 2/index.html','img/170.png'],
+  ['Binding of Issac Wrath of the Lamb','game','../HTML Games/Binding of Issac Wrath of the Lamb/index.html','img/350.png'],
+  ['BitGun.io','game','../HTML Games/BitGun.io/index.html',''],
+  ['BitLife','game','../HTML Games/BitLife/index.html','img/70.png'],
+  ['BitPlanes','game','../HTML Games/BitPlanes/index.html','img/330.png'],
+  ['BlackJack','game','../HTML Games/BlackJack/index.html','img/312.png'],
+  ['Blade Ball','game','../HTML Games/Blade Ball/index.html','img/167.png'],
+  ['Block Blast','game','../HTML Games/Block Blast/index.html','img/6.png'],
+  ['BlockPost','game','../HTML Games/BlockPost/index.html','img/273.png'],
+  ['Blocky Snakes','game','../HTML Games/Blocky Snakes/index.html','img/168.png'],
+  ['Bloons TD','game','../HTML Games/Bloons TD/index.html','img/71.png'],
+  ['Bloons TD 2','game','../HTML Games/Bloons TD 2/index.html','img/72.png'],
+  ['Bloons TD 3','game','../HTML Games/Bloons TD 3/index.html','img/73.png'],
+  ['Bloons TD 4','game','../HTML Games/Bloons TD 4/index.html','img/74.png'],
+  ['Bloons TD 5','game','../HTML Games/Bloons TD 5/index.html','img/75.png'],
+  ['Bloxorz','game','../HTML Games/Bloxorz/index.html','img/169.png'],
+  ['Blumgi Rocket','game','../HTML Games/Blumgi Rocket/index.html','img/353.png'],
+  ['Bob the Robber 2','game','../HTML Games/Bob the Robber 2/index.html','img/76.png'],
+  ['Boom Slingers Reboom','game','../HTML Games/Boom Slingers Reboom/index.html',''],
+  ['Bottle Jump 3D','game','../HTML Games/Bottle Jump 3D/index.html','img/30.png'],
+  ['Bouncemasters','game','../HTML Games/Bouncemasters/index.html','img/437.png'],
+  ['Bowmasters','game','../HTML Games/Bowmasters/index.html','img/0.png'],
+  ['Boxing Random','game','../HTML Games/Boxing Random/index.html','img/77.png'],
+  ['Brawl Guys.io','game','../HTML Games/Brawl Guys.io/index.html','img/121.png'],
+  ['Brawl Stars','game','../HTML Games/Brawl Stars/index.html',''],
+  ['Breaklock','game','../HTML Games/Breaklock/index.html',''],
+  ['Breath of the Wild NDS','game','../HTML Games/Breath of the Wild NDS/index.html',''],
+  ['Bridge Race','game','../HTML Games/Bridge Race/index.html','img/14.png'],
+  ['Brotato','game','../HTML Games/Brotato/index.html',''],
+  ['Buckshot Roulette','game','../HTML Games/Buckshot Roulette/index.html','img/205.png'],
+  ['Build a Big Army','game','../HTML Games/Build a Big Army/index.html','img/376.png'],
+  ['Build a Plane','game','../HTML Games/Build a Plane/index.html','img/377.png'],
+  ['Build a Queen','game','../HTML Games/Build a Queen/index.html','img/319.png'],
+  ['BuildNow.gg','game','../HTML Games/BuildNow.gg/index.html',''],
+  ['Burrito Bison Launcha Libre','game','../HTML Games/Burrito Bison Launcha Libre/index.html','img/78.png'],
+  ['Bust a Loop','game','../HTML Games/Bust a Loop/index.html','img/521.png'],
+  ['Buster Jam','game','../HTML Games/Buster Jam/index.html',''],
+  ['Camouflage and Sniper','game','../HTML Games/Camouflage and Sniper/index.html','img/378.png'],
+  ['Candy Crush','game','../HTML Games/Candy Crush/index.html','img/171.png'],
+  ['Cannon Balls 3D','game','../HTML Games/Cannon Balls 3D/index.html','img/150.png'],
+  ['Cannon Basketball','game','../HTML Games/Cannon Basketball/index.html','img/79.png'],
+  ['Cannon Basketball 2','game','../HTML Games/Cannon Basketball 2/index.html','img/80.png'],
+  ['Car Survival 3D','game','../HTML Games/Car Survival 3D/index.html','img/379.png'],
+  ['Carrom Clash','game','../HTML Games/Carrom Clash/index.html','img/202.png'],
+  ['CaseOh\'s Basics in Eating and Fast Food','game','../HTML Games/CaseOh_s Basics in Eating and Fast Food/index.html',''],
+  ['Cat Connection','game','../HTML Games/Cat Connection/index.html','img/536.png'],
+  ['Cat Gunner Super Zombie Shoot','game','../HTML Games/Cat Gunner Super Zombie Shoot/index.html','img/537.png'],
+  ['Cave Story','game','../HTML Games/Cave Story/index.html',''],
+  ['Celeste','game','../HTML Games/Celeste/index.html',''],
+  ['Celeste PICO','game','../HTML Games/Celeste PICO/index.html','img/440.png'],
+  ['Cell Machine','game','../HTML Games/Cell Machine/index.html',''],
+  ['CG FC 25','game','../HTML Games/CG FC 25/index.html',''],
+  ['Cheese Chompers 3D','game','../HTML Games/Cheese Chompers 3D/index.html','img/165.png'],
+  ['CheeseRolling','game','../HTML Games/CheeseRolling/index.html',''],
+  ['Chess Classic','game','../HTML Games/Chess Classic/index.html','img/151.png'],
+  ['Chiikawa Puzzle','game','../HTML Games/Chiikawa Puzzle/index.html','img/539.png'],
+  ['Choppy Orc','game','../HTML Games/Choppy Orc/index.html','img/464.png'],
+  ['Christmas Massacre','game','../HTML Games/Christmas Massacre/index.html',''],
+  ['CircloO','game','../HTML Games/CircloO/index.html','img/274.png'],
+  ['CircloO 2','game','../HTML Games/CircloO 2/index.html','img/275.png'],
+  ['City Defense','game','../HTML Games/City Defense/index.html','img/380.png'],
+  ['City Smash','game','../HTML Games/City Smash/index.html','img/449.png'],
+  ['Clash Of Vikings','game','../HTML Games/Clash Of Vikings/index.html','img/545.png'],
+  ['Class of _09','game','../HTML Games/Class of _09/index.html','img/259.png'],
+  ['Clothing Shop 3D','game','../HTML Games/Clothing Shop 3D/index.html','img/381.png'],
+  ['Clover Pit','game','../HTML Games/Clover Pit/index.html',''],
+  ['Cluster Rush','game','../HTML Games/Cluster Rush/index.html','img/81.png'],
+  ['Color Match','game','../HTML Games/Color Match/index.html','img/31.png'],
+  ['Color Water Sort 3D','game','../HTML Games/Color Water Sort 3D/index.html','img/15.png'],
+  ['Cookie Clicker','game','../HTML Games/Cookie Clicker/index.html','img/82.png'],
+  ['Cooking Mama','game','../HTML Games/Cooking Mama/index.html',''],
+  ['Cooking Mama 2','game','../HTML Games/Cooking Mama 2/index.html',''],
+  ['Cooking Mama 3','game','../HTML Games/Cooking Mama 3/index.html',''],
+  ['Cool Cars Run 3D','game','../HTML Games/Cool Cars Run 3D/index.html','img/382.png'],
+  ['Coreball','game','../HTML Games/Coreball/index.html','img/83.png'],
+  ['Count Masters Stickman Games','game','../HTML Games/Count Masters Stickman Games/index.html',''],
+  ['Crab Game','game','../HTML Games/Crab Game/index.html',''],
+  ['Crazy Cars','game','../HTML Games/Crazy Cars/index.html','img/331.png'],
+  ['Crazy Cattle 3D','game','../HTML Games/Crazy Cattle 3D/index.html','img/164.png'],
+  ['Crazy Chicken 3D','game','../HTML Games/Crazy Chicken 3D/index.html','img/255.png'],
+  ['Crazy Kitty 3D','game','../HTML Games/Crazy Kitty 3D/index.html','img/256.png'],
+  ['Crossy Road','game','../HTML Games/Crossy Road/index.html','img/24.png'],
+  ['Crush Cars 3D','game','../HTML Games/Crush Cars 3D/index.html','img/383.png'],
+  ['Cubefield','game','../HTML Games/Cubefield/index.html','img/84.png'],
+  ['Cuphead','game','../HTML Games/Cuphead/index.html','img/465.png'],
+  ['Cut the Rope','game','../HTML Games/Cut the Rope/index.html','img/85.png'],
+  ['Cut the Rope (2)','game','../HTML Games/Cut the Rope (2)/index.html','img/212.png'],
+  ['Cut the Rope Holiday Gift','game','../HTML Games/Cut the Rope Holiday Gift/index.html','img/214.png'],
+  ['Cut the Rope Time Travel','game','../HTML Games/Cut the Rope Time Travel/index.html','img/213.png'],
+  ['DEAD PLATE','game','../HTML Games/DEAD PLATE/index.html','img/462.png'],
+  ['DOOM','game','../HTML Games/DOOM/index.html','img/203.png'],
+  ['Dadish','game','../HTML Games/Dadish/index.html','img/357.png'],
+  ['Dadish 2','game','../HTML Games/Dadish 2/index.html','img/355.png'],
+  ['Dadish 3','game','../HTML Games/Dadish 3/index.html','img/356.png'],
+  ['Dadish 3D','game','../HTML Games/Dadish 3D/index.html','img/358.png'],
+  ['Daily Dadish','game','../HTML Games/Daily Dadish/index.html','img/359.png'],
+  ['Dalgona Candy Honeycomb Cookie','game','../HTML Games/Dalgona Candy Honeycomb Cookie/index.html',''],
+  ['Dan The Man','game','../HTML Games/Dan The Man/index.html','img/520.png'],
+  ['Death Run 3D','game','../HTML Games/Death Run 3D/index.html','img/211.png'],
+  ['Deltatraveler','game','../HTML Games/Deltatraveler/index.html','img/560.png'],
+  ['Destiny Run 3D','game','../HTML Games/Destiny Run 3D/index.html','img/384.png'],
+  ['Destroy The Car 3D','game','../HTML Games/Destroy The Car 3D/index.html','img/385.png'],
+  ['Diamond Seeker','game','../HTML Games/Diamond Seeker/index.html','img/386.png'],
+  ['Dice a Million','game','../HTML Games/Dice a Million/index.html',''],
+  ['Dig Deep','game','../HTML Games/Dig Deep/index.html','img/32.png'],
+  ['Dimension Incident','game','../HTML Games/Dimension Incident/index.html',''],
+  ['Do NOT Take This Cat Home','game','../HTML Games/Do NOT Take This Cat Home/index.html','img/193.png'],
+  ['Doge Miner','game','../HTML Games/Doge Miner/index.html','img/511.png'],
+  ['Doodle Jump','game','../HTML Games/Doodle Jump/index.html','img/470.png'],
+  ['Doom 2','game','../HTML Games/Doom 2/index.html',''],
+  ['Doom 3','game','../HTML Games/Doom 3/index.html',''],
+  ['Dragon vs Bricks','game','../HTML Games/Dragon vs Bricks/index.html','img/210.png'],
+  ['Draw Climber','game','../HTML Games/Draw Climber/index.html','img/86.png'],
+  ['Draw Joust','game','../HTML Games/Draw Joust/index.html','img/387.png'],
+  ['Draw the Hill','game','../HTML Games/Draw the Hill/index.html','img/209.png'],
+  ['Draw the Line','game','../HTML Games/Draw the Line/index.html','img/152.png'],
+  ['Dreadhead Parkour','game','../HTML Games/Dreadhead Parkour/index.html','img/310.png'],
+  ['Drift Boss','game','../HTML Games/Drift Boss/index.html','img/276.png'],
+  ['Drift Hunters','game','../HTML Games/Drift Hunters/index.html','img/173.png'],
+  ['Drivemad','game','../HTML Games/Drivemad/index.html',''],
+  ['Driven Wild','game','../HTML Games/Driven Wild/index.html','img/43.png'],
+  ['Duck Life','game','../HTML Games/Duck Life/index.html','img/234.png'],
+  ['Duck Life 2','game','../HTML Games/Duck Life 2/index.html','img/235.png'],
+  ['Duck Life 3','game','../HTML Games/Duck Life 3/index.html','img/236.png'],
+  ['Duck Life 4','game','../HTML Games/Duck Life 4/index.html','img/237.png'],
+  ['Duck Life 5','game','../HTML Games/Duck Life 5/index.html','img/238.png'],
+  ['Duck Life 8','game','../HTML Games/Duck Life 8/index.html',''],
+  ['Dumb Ways to Die','game','../HTML Games/Dumb Ways to Die/index.html',''],
+  ['Elastic Man','game','../HTML Games/Elastic Man/index.html','img/197.png'],
+  ['Emulator.JS','game','../HTML Games/Emulator.JS/index.html','img/87.png'],
+  ['Endoparasitic','game','../HTML Games/Endoparasitic/index.html','img/286.png'],
+  ['Endoparasitic 2','game','../HTML Games/Endoparasitic 2/index.html',''],
+  ['Endroll','game','../HTML Games/Endroll/index.html',''],
+  ['Escape Road','game','../HTML Games/Escape Road/index.html','img/264.png'],
+  ['Escape Road 2','game','../HTML Games/Escape Road 2/index.html','img/265.png'],
+  ['Escape Road City 2','game','../HTML Games/Escape Road City 2/index.html',''],
+  ['Evil Glitch','game','../HTML Games/Evil Glitch/index.html','img/277.png'],
+  ['EvoWars.io','game','../HTML Games/EvoWars.io/index.html','img/360.png'],
+  ['Evolving Bombs 3D','game','../HTML Games/Evolving Bombs 3D/index.html','img/388.png'],
+  ['FIFA 10','game','../HTML Games/FIFA 10/index.html',''],
+  ['FIFA 11','game','../HTML Games/FIFA 11/index.html',''],
+  ['FISH','game','../HTML Games/FISH/index.html',''],
+  ['FNF Vs. Hypno\'s Lullaby v2','game','../HTML Games/FNF Vs. Hypno_s Lullaby v2/index.html','img/8.png'],
+  ['FNF Vs. Sonic.EXE 3.04.0','game','../HTML Games/FNF Vs. Sonic.EXE 3.04.0/index.html','img/8.png'],
+  ['FNF vs Bob v2.0 (Bob\'s Onslaught)','game','../HTML Games/FNF vs Bob v2.0 (Bob_s Onslaught)/index.html','img/8.png'],
+  ['FNF vs Pibby Corrupted','game','../HTML Games/FNF vs Pibby Corrupted/index.html','img/8.png'],
+  ['Fallout','game','../HTML Games/Fallout/index.html',''],
+  ['Famidash','game','../HTML Games/Famidash/index.html',''],
+  ['Fancy Pants Adventure','game','../HTML Games/Fancy Pants Adventure/index.html','img/333.png'],
+  ['Fancy Pants Adventure 2','game','../HTML Games/Fancy Pants Adventure 2/index.html','img/334.png'],
+  ['Fancy Pants Adventure 3','game','../HTML Games/Fancy Pants Adventure 3/index.html','img/335.png'],
+  ['Fancy Pants Adventure 4 Part 1','game','../HTML Games/Fancy Pants Adventure 4 Part 1/index.html','img/336.png'],
+  ['Fancy Pants Adventure 4 Part 2','game','../HTML Games/Fancy Pants Adventure 4 Part 2/index.html','img/337.png'],
+  ['Fashion Battle','game','../HTML Games/Fashion Battle/index.html','img/127.png'],
+  ['Fear Assessment','game','../HTML Games/Fear Assessment/index.html',''],
+  ['Fear and Hunger','game','../HTML Games/Fear and Hunger/index.html',''],
+  ['Fears to Fathom Home Alone','game','../HTML Games/Fears to Fathom Home Alone/index.html','img/460.png'],
+  ['Final Earth 2','game','../HTML Games/Final Earth 2/index.html','img/512.png'],
+  ['Final Fantasy VII','game','../HTML Games/Final Fantasy VII/index.html',''],
+  ['Find the Alien','game','../HTML Games/Find the Alien/index.html','img/323.png'],
+  ['Fire and Frost Master','game','../HTML Games/Fire and Frost Master/index.html','img/389.png'],
+  ['Fireboy and Watergirl 2','game','../HTML Games/Fireboy and Watergirl 2/index.html','img/88.png'],
+  ['Fireboy and Watergirl 3','game','../HTML Games/Fireboy and Watergirl 3/index.html','img/89.png'],
+  ['Fitness Empire','game','../HTML Games/Fitness Empire/index.html','img/390.png'],
+  ['Five Nights at Candy\'s','game','../HTML Games/Five Nights at Candy_s/index.html','img/503.png'],
+  ['Five Nights at Candy\'s 2','game','../HTML Games/Five Nights at Candy_s 2/index.html','img/504.png'],
+  ['Five Nights at Epstein\'s','game','../HTML Games/Five Nights at Epstein_s/index.html',''],
+  ['Five Nights at Freddy\'s','game','../HTML Games/Five Nights at Freddy\'s/index.html','img/38.png'],
+  ['Five Nights at Freddy\'s 2','game','../HTML Games/Five Nights at Freddy_s 2/index.html','img/39.png'],
+  ['Five Nights at Freddy\'s 3','game','../HTML Games/Five Nights at Freddy_s 3/index.html','img/40.png'],
+  ['Five Nights at Freddy\'s 4','game','../HTML Games/Five Nights at Freddy_s 4/index.html','img/41.png'],
+  ['Five Nights at Freddy\'s 4 Halloween','game','../HTML Games/Five Nights at Freddy_s 4 Halloween/index.html','img/428.png'],
+  ['Five Nights at Freddy\'s Pizza Simulator','game','../HTML Games/Five Nights at Freddy_s Pizza Simulator/index.html','img/191.png'],
+  ['Five Nights at Freddy\'s Sister Location','game','../HTML Games/Five Nights at Freddy\'s Sister Location/index.html','img/185.png'],
+  ['Five Nights at Freddy\'s Ultimate Custom Night','game','../HTML Games/Five Nights at Freddy_s Ultimate Custom Night/index.html','img/192.png'],
+  ['Five Nights at Freddy\'s World','game','../HTML Games/Five Nights at Freddy_s World/index.html','img/190.png'],
+  ['Five Nights at Freddy\'s World Refreshed','game','../HTML Games/Five Nights at Freddy_s World Refreshed/index.html',''],
+  ['Five Nights at Last Breath','game','../HTML Games/Five Nights at Last Breath/index.html',''],
+  ['Five Nights at Shrek\'s Hotel','game','../HTML Games/Five Nights at Shrek_s Hotel/index.html',''],
+  ['Five Nights at Winston\'s','game','../HTML Games/Five Nights at Winston_s/index.html','img/204.png'],
+  ['Flappy Bird','game','../HTML Games/Flappy Bird/index.html','img/129.png'],
+  ['Flappy Dunk','game','../HTML Games/Flappy Dunk/index.html','img/153.png'],
+  ['Flick Goal','game','../HTML Games/Flick Goal/index.html','img/391.png'],
+  ['Flip Master','game','../HTML Games/Flip Master/index.html','img/392.png'],
+  ['Flying Gorilla','game','../HTML Games/Flying Gorilla/index.html',''],
+  ['Football Bros','game','../HTML Games/Football Bros/index.html','img/548.png'],
+  ['Fork n Sausage','game','../HTML Games/Fork n Sausage/index.html','img/154.png'],
+  ['Fortzone Battle Royale','game','../HTML Games/Fortzone Battle Royale/index.html','img/120.png'],
+  ['Friday Night Funkin','game','../HTML Games/Friday Night Funkin/index.html','img/8.png'],
+  ['Friday Night Funkin VS Impostor v4','game','../HTML Games/Friday Night Funkin VS Impostor v4/index.html','img/8.png'],
+  ['Friday Night Funkin VS. KAPI','game','../HTML Games/Friday Night Funkin VS. KAPI/index.html','img/555.png'],
+  ['Friday Night Funkin VS. Sky','game','../HTML Games/Friday Night Funkin VS. Sky/index.html','img/556.png'],
+  ['Friday Night Funkin Vs. Cyber Sensation','game','../HTML Games/Friday Night Funkin Vs. Cyber Sensation/index.html','img/558.png'],
+  ['Friday Night Funkin vs Carol V2','game','../HTML Games/Friday Night Funkin vs Carol V2/index.html','img/8.png'],
+  ['Friday Night Funkin vs Nonsense','game','../HTML Games/Friday Night Funkin vs Nonsense/index.html','img/8.png'],
+  ['Friday Night Funkin vs Shaggy','game','../HTML Games/Friday Night Funkin vs Shaggy/index.html','img/559.png'],
+  ['Friday Night Funkin vs Sunday Remastered HD','game','../HTML Games/Friday Night Funkin vs Sunday Remastered HD/index.html','img/8.png'],
+  ['Friday Night Funkin vs Tabi','game','../HTML Games/Friday Night Funkin vs Tabi/index.html','img/8.png'],
+  ['Friday Night Funkin vs Undertale','game','../HTML Games/Friday Night Funkin vs Undertale/index.html','img/8.png'],
+  ['Friday Night Funkin vs Zardy','game','../HTML Games/Friday Night Funkin vs Zardy/index.html','img/8.png'],
+  ['Friday Night Funkin\' 17 Bucks Floor 1','game','../HTML Games/Friday Night Funkin_ 17 Bucks Floor 1/index.html','img/498.png'],
+  ['Friday Night Funkin\' AKAGE','game','../HTML Games/Friday Night Funkin_ AKAGE/index.html','img/8.png'],
+  ['Friday Night Funkin\' B-Sides','game','../HTML Games/Friday Night Funkin_ B-Sides/index.html','img/475.png'],
+  ['Friday Night Funkin\' Chaos Nightmare - Sonic Vs. Fleetway','game','../HTML Games/Friday Night Funkin_ Chaos Nightmare - Sonic Vs. Fleetway/index.html','img/8.png'],
+  ['Friday Night Funkin\' Creepypasta JP','game','../HTML Games/Friday Night Funkin_ Creepypasta JP/index.html','img/484.png'],
+  ['Friday Night Funkin\' D-Sides','game','../HTML Games/Friday Night Funkin_ D-Sides/index.html','img/8.png'],
+  ['Friday Night Funkin\' Darkness Takeover','game','../HTML Games/Friday Night Funkin_ Darkness Takeover/index.html','img/525.png'],
+  ['Friday Night Funkin\' Drop and Roll, but Playable','game','../HTML Games/Friday Night Funkin_ Drop and Roll, but Playable/index.html','img/8.png'],
+  ['Friday Night Funkin\' FIRE IN THE HOLE Lobotomy Dash Funkin_','game','../HTML Games/Friday Night Funkin_ FIRE IN THE HOLE Lobotomy Dash Funkin_/index.html','img/499.png'],
+  ['Friday Night Funkin\' Gumballs','game','../HTML Games/Friday Night Funkin_ Gumballs/index.html','img/8.png'],
+  ['Friday Night Funkin\' Heartbreak Havoc [Vs. Sky REDUX]','game','../HTML Games/Friday Night Funkin_ Heartbreak Havoc [Vs. Sky REDUX]/index.html','img/8.png'],
+  ['Friday Night Funkin\' Hit Single Real','game','../HTML Games/Friday Night Funkin_ Hit Single Real/index.html','img/483.png'],
+  ['Friday Night Funkin\' Indie Cross','game','../HTML Games/Friday Night Funkin_ Indie Cross/index.html','img/489.png'],
+  ['Friday Night Funkin\' Jeffy\'s Endless Aethos','game','../HTML Games/Friday Night Funkin_ Jeffy_s Endless Aethos/index.html','img/496.png'],
+  ['Friday Night Funkin\' Mario\'s Madness','game','../HTML Games/Friday Night Funkin_ Mario_s Madness/index.html','img/8.png'],
+  ['Friday Night Funkin\' Mistful Crimson Morning Reboot','game','../HTML Games/Friday Night Funkin_ Mistful Crimson Morning Reboot/index.html','img/488.png'],
+  ['Friday Night Funkin\' Neo','game','../HTML Games/Friday Night Funkin_ Neo/index.html','img/478.png'],
+  ['Friday Night Funkin\' Pibby Apocalypse','game','../HTML Games/Friday Night Funkin_ Pibby Apocalypse/index.html','img/541.png'],
+  ['Friday Night Funkin\' Rev-Mixed','game','../HTML Games/Friday Night Funkin_ Rev-Mixed/index.html','img/8.png'],
+  ['Friday Night Funkin\' Sarvente\'s Mid-Fight Masses','game','../HTML Games/Friday Night Funkin_ Sarvente_s Mid-Fight Masses/index.html','img/480.png'],
+  ['Friday Night Funkin\' Soft','game','../HTML Games/Friday Night Funkin_ Soft/index.html','img/509.png'],
+  ['Friday Night Funkin\' Sonic Legacy','game','../HTML Games/Friday Night Funkin_ Sonic Legacy/index.html','img/486.png'],
+  ['Friday Night Funkin\' Sunday Night Suicide Rookies Edition','game','../HTML Games/Friday Night Funkin_ Sunday Night Suicide Rookies Edition/index.html','img/8.png'],
+  ['Friday Night Funkin\' TWIDDLEFINGER','game','../HTML Games/Friday Night Funkin_ TWIDDLEFINGER/index.html','img/500.png'],
+  ['Friday Night Funkin\' V.S. Whitty','game','../HTML Games/Friday Night Funkin_ V.S. Whitty/index.html','img/474.png'],
+  ['Friday Night Funkin\' VS Impostor B-Sides','game','../HTML Games/Friday Night Funkin_ VS Impostor B-Sides/index.html','img/8.png'],
+  ['Friday Night Funkin\' VS. Impostor Alternated','game','../HTML Games/Friday Night Funkin_ VS. Impostor Alternated/index.html','img/8.png'],
+  ['Friday Night Funkin\' Vs. Hatsune Miku','game','../HTML Games/Friday Night Funkin_ Vs. Hatsune Miku/index.html','img/477.png'],
+  ['Friday Night Funkin\' Vs. Hex','game','../HTML Games/Friday Night Funkin_ Vs. Hex/index.html','img/476.png'],
+  ['Friday Night Funkin\' Wednesday\'s Infidelity','game','../HTML Games/Friday Night Funkin_ Wednesday_s Infidelity/index.html','img/8.png'],
+  ['Friday Night Funkin\' vs Hypno Lullaby','game','../HTML Games/Friday Night Funkin_ vs Hypno Lullaby/index.html','img/8.png'],
+  ['Friday Night Funkin\' vs. BOPCITY','game','../HTML Games/Friday Night Funkin_ vs. BOPCITY/index.html','img/497.png'],
+  ['Friday Night Funkin\' vs. Garcello','game','../HTML Games/Friday Night Funkin_ vs. Garcello/index.html','img/485.png'],
+  ['Friday Night Funkin\' vs. QT','game','../HTML Games/Friday Night Funkin_ vs. QT/index.html','img/487.png'],
+  ['Friday Night Funkin\' vs. Tricky','game','../HTML Games/Friday Night Funkin_ vs. Tricky/index.html','img/481.png'],
+  ['Fruit Ninja','game','../HTML Games/Fruit Ninja/index.html','img/261.png'],
+  ['Fundamental Paper Novel','game','../HTML Games/Fundamental Paper Novel/index.html',''],
+  ['Fused 240','game','../HTML Games/Fused 240/index.html',''],
+  ['Gabriel\'s Awesome Schoolhouse','game','../HTML Games/Gabriel_s Awesome Schoolhouse/index.html',''],
+  ['Generic Fighter Maybe','game','../HTML Games/Generic Fighter Maybe/index.html','img/519.png'],
+  ['Geometry Dash Lite (REMAKE)','game','../HTML Games/Geometry Dash Lite (REMAKE)/index.html','img/27.png'],
+  ['Get Yoked','game','../HTML Games/Get Yoked/index.html',''],
+  ['Getaway Shootout','game','../HTML Games/Getaway Shootout/index.html','img/338.png'],
+  ['Getting Over It with Bennett Foddy','game','../HTML Games/Getting Over It with Bennett Foddy/index.html','img/557.png'],
+  ['Giant Wanted','game','../HTML Games/Giant Wanted/index.html','img/393.png'],
+  ['Gladihoppers','game','../HTML Games/Gladihoppers/index.html','img/4.png'],
+  ['Gobble','game','../HTML Games/Gobble/index.html','img/37.png'],
+  ['Goblin Goopmaxxing','game','../HTML Games/Goblin Goopmaxxing/index.html',''],
+  ['God\'s Flesh','game','../HTML Games/God_s Flesh/index.html','img/434.png'],
+  ['Godzilla Daikaiju Battle Royale','game','../HTML Games/Godzilla Daikaiju Battle Royale/index.html',''],
+  ['Going Balls','game','../HTML Games/Going Balls/index.html',''],
+  ['Google Baseball','game','../HTML Games/Google Baseball/index.html','img/257.png'],
+  ['Google Feud','game','../HTML Games/Google Feud/index.html','img/361.png'],
+  ['Gorilla Tag','game','../HTML Games/Gorilla Tag/index.html',''],
+  ['Granny','game','../HTML Games/Granny/index.html','img/90.png'],
+  ['Granny 2','game','../HTML Games/Granny 2/index.html','img/125.png'],
+  ['Granny 3','game','../HTML Games/Granny 3/index.html','img/126.png'],
+  ['Growden.io','game','../HTML Games/Growden.io/index.html',''],
+  ['Guess Their Answer','game','../HTML Games/Guess Their Answer/index.html','img/155.png'],
+  ['Gun Clone','game','../HTML Games/Gun Clone/index.html','img/394.png'],
+  ['Gun Runner','game','../HTML Games/Gun Runner/index.html','img/395.png'],
+  ['Gunspin','game','../HTML Games/Gunspin/index.html','img/91.png'],
+  ['Half Life','game','../HTML Games/Half Life/index.html','img/262.png'],
+  ['Half Life Opposing Force','game','../HTML Games/Half Life Opposing Force/index.html',''],
+  ['Happy Sheepies','game','../HTML Games/Happy Sheepies/index.html','img/351.png'],
+  ['Happy Wheels','game','../HTML Games/Happy Wheels/index.html',''],
+  ['Harvest.io','game','../HTML Games/Harvest.io/index.html','img/156.png'],
+  ['Hide N Seek','game','../HTML Games/Hide N Seek/index.html','img/16.png'],
+  ['High Heels','game','../HTML Games/High Heels/index.html','img/422.png'],
+  ['Highway Racer','game','../HTML Games/Highway Racer/index.html',''],
+  ['Highway Racer 2','game','../HTML Games/Highway Racer 2/index.html','img/92.png'],
+  ['Highway Racer 2 REMASTERED','game','../HTML Games/Highway Racer 2 REMASTERED/index.html',''],
+  ['Hill Climb Racing Lite','game','../HTML Games/Hill Climb Racing Lite/index.html','img/157.png'],
+  ['Hobo 1','game','../HTML Games/Hobo 1/index.html',''],
+  ['Hobo 2','game','../HTML Games/Hobo 2/index.html',''],
+  ['Hobo 3','game','../HTML Games/Hobo 3/index.html',''],
+  ['Hobo 4','game','../HTML Games/Hobo 4/index.html',''],
+  ['Hobo 5','game','../HTML Games/Hobo 5/index.html',''],
+  ['Hobo 6','game','../HTML Games/Hobo 6/index.html',''],
+  ['Hobo 7','game','../HTML Games/Hobo 7/index.html',''],
+  ['Hollow Knight','game','../HTML Games/Hollow Knight/index.html','img/468.png'],
+  ['Hollow Knight SilkSong','game','../HTML Games/Hollow Knight SilkSong/index.html',''],
+  ['Hotline Miami','game','../HTML Games/Hotline Miami/index.html','img/217.png'],
+  ['House of Hazards','game','../HTML Games/House of Hazards/index.html','img/339.png'],
+  ['Hula Hoop Race','game','../HTML Games/Hula Hoop Race/index.html',''],
+  ['Human Expenditure Program','game','../HTML Games/Human Expenditure Program/index.html','img/482.png'],
+  ['Hypper Sandbox','game','../HTML Games/Hypper Sandbox/index.html','img/551.png'],
+  ['I woke up next to you again','game','../HTML Games/I woke up next to you again/index.html','img/491.png'],
+  ['Ice Dodo','game','../HTML Games/Ice Dodo/index.html','img/5.png'],
+  ['Idle Breakout','game','../HTML Games/Idle Breakout/index.html','img/362.png'],
+  ['Idle Dice','game','../HTML Games/Idle Dice/index.html','img/294.png'],
+  ['Idle Lumber Inc','game','../HTML Games/Idle Lumber Inc/index.html','img/363.png'],
+  ['Idle Mining Empire','game','../HTML Games/Idle Mining Empire/index.html','img/364.png'],
+  ['In Stars and Time','game','../HTML Games/In Stars and Time/index.html',''],
+  ['Infinimoes','game','../HTML Games/Infinimoes/index.html','img/442.png'],
+  ['Iron Lung','game','../HTML Games/Iron Lung/index.html',''],
+  ['JavascriptPS1','game','../HTML Games/JavascriptPS1/index.html',''],
+  ['Jeffrey Epstein Basics In Education And Kidnapping','game','../HTML Games/Jeffrey Epstein Basics In Education And Kidnapping/index.html',''],
+  ['Jelly Drift','game','../HTML Games/Jelly Drift/index.html','img/543.png'],
+  ['Jelly Mario','game','../HTML Games/Jelly Mario/index.html','img/315.png'],
+  ['Jelly Restaurant','game','../HTML Games/Jelly Restaurant/index.html',''],
+  ['Jetpack Joyride','game','../HTML Games/Jetpack Joyride/index.html','img/7.png'],
+  ['Johnny Trigger','game','../HTML Games/Johnny Trigger/index.html','img/93.png'],
+  ['Journey Downhill','game','../HTML Games/Journey Downhill/index.html','img/94.png'],
+  ['Jumbo Mario','game','../HTML Games/Jumbo Mario/index.html',''],
+  ['JustFall.lol','game','../HTML Games/JustFall.lol/index.html','img/365.png'],
+  ['Kaji Run','game','../HTML Games/Kaji Run/index.html','img/396.png'],
+  ['Karlson','game','../HTML Games/Karlson/index.html','img/542.png'],
+  ['Kindergarten','game','../HTML Games/Kindergarten/index.html','img/445.png'],
+  ['Kindergarten 2','game','../HTML Games/Kindergarten 2/index.html','img/446.png'],
+  ['Kindergarten 3','game','../HTML Games/Kindergarten 3/index.html','img/501.png'],
+  ['Kirby Squeak Squad','game','../HTML Games/Kirby Squeak Squad/index.html',''],
+  ['Kirby Super Star Ultra','game','../HTML Games/Kirby Super Star Ultra/index.html',''],
+  ['Kirby ~ Soft and Wet','game','../HTML Games/Kirby ~ Soft and Wet/index.html',''],
+  ['Kitchen Bazar','game','../HTML Games/Kitchen Bazar/index.html','img/325.png'],
+  ['Kitty Toy','game','../HTML Games/Kitty Toy/index.html','img/441.png'],
+  ['Lacey\'s Flash Games','game','../HTML Games/Lacey_s Flash Games/index.html','img/463.png'],
+  ['Layers Roll','game','../HTML Games/Layers Roll/index.html',''],
+  ['Lazy Jumper','game','../HTML Games/Lazy Jumper/index.html',''],
+  ['Learn to Fly','game','../HTML Games/Learn to Fly/index.html','img/340.png'],
+  ['Learn to Fly 2','game','../HTML Games/Learn to Fly 2/index.html','img/341.png'],
+  ['Learn to Fly 3','game','../HTML Games/Learn to Fly 3/index.html','img/342.png'],
+  ['Learn to Fly Idle','game','../HTML Games/Learn to Fly Idle/index.html','img/343.png'],
+  ['Line Rider','game','../HTML Games/Line Rider/index.html','img/95.png'],
+  ['Little Runmo','game','../HTML Games/Little Runmo/index.html','img/302.png'],
+  ['Look Outside','game','../HTML Games/Look Outside/index.html',''],
+  ['Love Letters','game','../HTML Games/Love Letters/index.html','img/538.png'],
+  ['Madalin Stunt Cars 2','game','../HTML Games/Madalin Stunt Cars 2/index.html','img/278.png'],
+  ['Madalin Stunt Cars 3','game','../HTML Games/Madalin Stunt Cars 3/index.html','img/279.png'],
+  ['Madness Combat Project Nexus (classic)','game','../HTML Games/Madness Combat Project Nexus (classic)/index.html','img/471.png'],
+  ['Magic Tiles 3','game','../HTML Games/Magic Tiles 3/index.html','img/17.png'],
+  ['Make a SuperBoat','game','../HTML Games/Make a SuperBoat/index.html','img/397.png'],
+  ['Makeover Run','game','../HTML Games/Makeover Run/index.html','img/398.png'],
+  ['Man Runner 2048','game','../HTML Games/Man Runner 2048/index.html',''],
+  ['Match Triple 3D','game','../HTML Games/Match Triple 3D/index.html',''],
+  ['Maze Speedrun','game','../HTML Games/Maze Speedrun/index.html','img/324.png'],
+  ['Meatboy','game','../HTML Games/Meatboy/index.html',''],
+  ['Mega Car Jumps','game','../HTML Games/Mega Car Jumps/index.html','img/399.png'],
+  ['Melon Playground','game','../HTML Games/Melon Playground/index.html','img/172.png'],
+  ['Merge Harvest','game','../HTML Games/Merge Harvest/index.html','img/366.png'],
+  ['Metal Gear Solid','game','../HTML Games/Metal Gear Solid/index.html',''],
+  ['Midnight Shift','game','../HTML Games/Midnight Shift/index.html',''],
+  ['Milk Inside a Bag of Milk Inside a Bag of Milk','game','../HTML Games/Milk Inside a Bag of Milk Inside a Bag of Milk/index.html',''],
+  ['Milk Outside A Bag Of Milk Outside A Bag Of Milk','game','../HTML Games/Milk Outside A Bag Of Milk Outside A Bag Of Milk/index.html',''],
+  ['Mindwave','game','../HTML Games/Mindwave/index.html',''],
+  ['Minecraft 1.12.2','game','../HTML Games/Minecraft 1.12.2/index.html','img/182.png'],
+  ['Minecraft 1.21.4','game','../HTML Games/Minecraft 1.21.4/index.html','img/183.png'],
+  ['Minecraft 1.5.2','game','../HTML Games/Minecraft 1.5.2/index.html','img/297.png'],
+  ['Minecraft 1.8.8','game','../HTML Games/Minecraft 1.8.8/index.html','img/181.png'],
+  ['Minecraft Alpha 1.2.6','game','../HTML Games/Minecraft Alpha 1.2.6/index.html','img/298.png'],
+  ['Minecraft Beta 1.3','game','../HTML Games/Minecraft Beta 1.3/index.html','img/299.png'],
+  ['Minecraft Beta 1.7.3','game','../HTML Games/Minecraft Beta 1.7.3/index.html','img/300.png'],
+  ['Minecraft Indev','game','../HTML Games/Minecraft Indev/index.html','img/301.png'],
+  ['Minecraft Pocket Edition','game','../HTML Games/Minecraft Pocket Edition/index.html',''],
+  ['Minesweeper','game','../HTML Games/Minesweeper/index.html',''],
+  ['Minesweeper Mania','game','../HTML Games/Minesweeper Mania/index.html','img/313.png'],
+  ['Minesweeper Plus','game','../HTML Games/Minesweeper Plus/index.html',''],
+  ['Mob Control HTML5','game','../HTML Games/Mob Control HTML5/index.html','img/22.png'],
+  ['Money Rush','game','../HTML Games/Money Rush/index.html','img/400.png'],
+  ['Monster Box 3D','game','../HTML Games/Monster Box 3D/index.html','img/401.png'],
+  ['Monster Tracks','game','../HTML Games/Monster Tracks/index.html','img/36.png'],
+  ['Moto X3M','game','../HTML Games/Moto X3M/index.html','img/96.png'],
+  ['Moto X3M 2','game','../HTML Games/Moto X3M 2/index.html','img/97.png'],
+  ['Moto X3M 3','game','../HTML Games/Moto X3M 3/index.html','img/98.png'],
+  ['Moto X3M Pool Party','game','../HTML Games/Moto X3M Pool Party/index.html','img/124.png'],
+  ['Moto X3M Spooky','game','../HTML Games/Moto X3M Spooky/index.html','img/99.png'],
+  ['Moto X3M Winter','game','../HTML Games/Moto X3M Winter/index.html','img/100.png'],
+  ['Mountain Bike Racer','game','../HTML Games/Mountain Bike Racer/index.html',''],
+  ['Mutilate a Doll 2','game','../HTML Games/Mutilate a Doll 2/index.html',''],
+  ['Nazi Zombies Portable','game','../HTML Games/Nazi Zombies Portable/index.html','img/308.png'],
+  ['Needy Streamer Overload','game','../HTML Games/Needy Streamer Overload/index.html',''],
+  ['Newgrounds Rumble','game','../HTML Games/Newgrounds Rumble/index.html',''],
+  ['Nijika\'s Ahoge','game','../HTML Games/Nijika_s Ahoge/index.html','img/447.png'],
+  ['Ninja vs EvilCorp','game','../HTML Games/Ninja vs EvilCorp/index.html','img/101.png'],
+  ['Nubby\'s Number Factory','game','../HTML Games/Nubby_s Number Factory/index.html','img/517.png'],
+  ['OMORI','game','../HTML Games/OMORI/index.html','img/427.png'],
+  ['Off','game','../HTML Games/Off/index.html',''],
+  ['Office Fight','game','../HTML Games/Office Fight/index.html','img/402.png'],
+  ['Offroad Mountain Bike','game','../HTML Games/Offroad Mountain Bike/index.html','img/116.png'],
+  ['Om Nom Run','game','../HTML Games/Om Nom Run/index.html','img/328.png'],
+  ['Oneshot (LEGACY)','game','../HTML Games/Oneshot (LEGACY)/index.html',''],
+  ['Orange Roulette','game','../HTML Games/Orange Roulette/index.html',''],
+  ['Oshi Oshi Punch!','game','../HTML Games/Oshi Oshi Punch!/index.html','img/516.png'],
+  ['Outhold','game','../HTML Games/Outhold/index.html',''],
+  ['Overburden','game','../HTML Games/Overburden/index.html',''],
+  ['OvO','game','../HTML Games/OvO/index.html','img/1.png'],
+  ['OvO 2','game','../HTML Games/OvO 2/index.html','img/2.png'],
+  ['OvO 3 Dimensions','game','../HTML Games/OvO 3 Dimensions/index.html','img/3.png'],
+  ['Pac Man World','game','../HTML Games/Pac Man World/index.html',''],
+  ['Pac Man World 2','game','../HTML Games/Pac Man World 2/index.html',''],
+  ['Pac-Man Superfast','game','../HTML Games/Pac-Man Superfast/index.html','img/158.png'],
+  ['Pacman','game','../HTML Games/Pacman/index.html',''],
+  ['PacMan (Horror)','game','../HTML Games/PacMan (Horror)/index.html','img/515.png'],
+  ['Papa\'s Bakeria','game','../HTML Games/Papa_s Bakeria/index.html','img/218.png'],
+  ['Papa\'s Burgeria','game','../HTML Games/Papa_s Burgeria/index.html','img/219.png'],
+  ['Papa\'s Cheeseria','game','../HTML Games/Papa_s Cheeseria/index.html','img/220.png'],
+  ['Papa\'s Cupcakeria','game','../HTML Games/Papa_s Cupcakeria/index.html','img/221.png'],
+  ['Papa\'s Donuteria','game','../HTML Games/Papa_s Donuteria/index.html','img/222.png'],
+  ['Papa\'s Freezeria','game','../HTML Games/Papa_s Freezeria/index.html','img/223.png'],
+  ['Papa\'s Hot Doggeria','game','../HTML Games/Papa_s Hot Doggeria/index.html','img/224.png'],
+  ['Papa\'s Pancakeria','game','../HTML Games/Papa_s Pancakeria/index.html','img/225.png'],
+  ['Papa\'s Pastaria','game','../HTML Games/Papa_s Pastaria/index.html','img/226.png'],
+  ['Papa\'s Pizeria','game','../HTML Games/Papa_s Pizeria/index.html','img/227.png'],
+  ['Papa\'s Scooperia','game','../HTML Games/Papa_s Scooperia/index.html','img/228.png'],
+  ['Papa\'s Sushiria','game','../HTML Games/Papa_s Sushiria/index.html','img/229.png'],
+  ['Papa\'s Taco Mia','game','../HTML Games/Papa_s Taco Mia/index.html','img/230.png'],
+  ['Papa\'s Wingeria','game','../HTML Games/Papa_s Wingeria/index.html','img/231.png'],
+  ['Paper.io 2','game','../HTML Games/Paper.io 2/index.html','img/102.png'],
+  ['Papers, Please','game','../HTML Games/Papers, Please/index.html','img/187.png'],
+  ['Papery Planes','game','../HTML Games/Papery Planes/index.html','img/280.png'],
+  ['Parappa The Rapper','game','../HTML Games/Parappa The Rapper/index.html','img/524.png'],
+  ['Parking Fury 3D','game','../HTML Games/Parking Fury 3D/index.html','img/367.png'],
+  ['Parking Rush','game','../HTML Games/Parking Rush/index.html','img/159.png'],
+  ['Peaks of Yore','game','../HTML Games/Peaks of Yore/index.html',''],
+  ['Peggle','game','../HTML Games/Peggle/index.html',''],
+  ['People Playground','game','../HTML Games/People Playground/index.html','img/194.png'],
+  ['Pico\'s School (1999)','game','../HTML Games/Pico_s School (1999)/index.html',''],
+  ['Pixel Gun Survival','game','../HTML Games/Pixel Gun Survival/index.html','img/281.png'],
+  ['Pizza Tower','game','../HTML Games/Pizza Tower/index.html','img/267.png'],
+  ['Pizza Tower Scoutdigo','game','../HTML Games/Pizza Tower Scoutdigo/index.html',''],
+  ['Plants vs Zombies','game','../HTML Games/Plants vs Zombies/index.html','img/232.png'],
+  ['Plants vs. Zombies 2 Gardenless','game','../HTML Games/Plants vs. Zombies 2 Gardenless/index.html',''],
+  ['Play!.js','game','../HTML Games/Play!.js/index.html',''],
+  ['Please Dont Touch Anything','game','../HTML Games/Please Dont Touch Anything/index.html',''],
+  ['Plinko','game','../HTML Games/Plinko/index.html','img/544.png'],
+  ['Pokemon Emerald','game','../HTML Games/Pokemon Emerald/index.html','img/506.png'],
+  ['Pokemon Firered','game','../HTML Games/Pokemon Firered/index.html',''],
+  ['Pokemon HeartGold','game','../HTML Games/Pokemon HeartGold/index.html',''],
+  ['Pokemon Red','game','../HTML Games/Pokemon Red/index.html','img/505.png'],
+  ['Pokey Ball','game','../HTML Games/Pokey Ball/index.html','img/326.png'],
+  ['Poly Track','game','../HTML Games/Poly Track/index.html','img/123.png'],
+  ['PortaBoy+','game','../HTML Games/PortaBoy+/index.html','img/514.png'],
+  ['Postal','game','../HTML Games/Postal/index.html',''],
+  ['Pottery Master','game','../HTML Games/Pottery Master/index.html',''],
+  ['Pou','game','../HTML Games/Pou/index.html','img/23.png'],
+  ['Power Hover','game','../HTML Games/Power Hover/index.html',''],
+  ['Protektor','game','../HTML Games/Protektor/index.html','img/282.png'],
+  ['Quake III Arena','game','../HTML Games/Quake III Arena/index.html','img/263.png'],
+  ['R.E.P.O','game','../HTML Games/R.E.P.O/index.html','img/195.png'],
+  ['RERUN','game','../HTML Games/RERUN/index.html','img/260.png'],
+  ['Race Master 3D','game','../HTML Games/Race Master 3D/index.html','img/160.png'],
+  ['Raft','game','../HTML Games/Raft/index.html','img/457.png'],
+  ['Raft Wars','game','../HTML Games/Raft Wars/index.html','img/344.png'],
+  ['Raft Wars 2','game','../HTML Games/Raft Wars 2/index.html','img/345.png'],
+  ['Ragdoll Archers','game','../HTML Games/Ragdoll Archers/index.html','img/186.png'],
+  ['Ragdoll Hit','game','../HTML Games/Ragdoll Hit/index.html','img/44.png'],
+  ['Rainbow Obby','game','../HTML Games/Rainbow Obby/index.html','img/307.png'],
+  ['Raldi\'s Crackhouse','game','../HTML Games/Raldi_s Crackhouse/index.html',''],
+  ['Real Flight Simulator','game','../HTML Games/Real Flight Simulator/index.html',''],
+  ['Recoil','game','../HTML Games/Recoil/index.html','img/546.png'],
+  ['Red Ball','game','../HTML Games/Red Ball/index.html','img/239.png'],
+  ['Red Ball 2','game','../HTML Games/Red Ball 2/index.html','img/240.png'],
+  ['Red Ball 3','game','../HTML Games/Red Ball 3/index.html','img/241.png'],
+  ['Red Ball 4','game','../HTML Games/Red Ball 4/index.html','img/242.png'],
+  ['Red Ball 4 Vol. 2','game','../HTML Games/Red Ball 4 Vol. 2/index.html','img/243.png'],
+  ['Red Ball 4 Vol. 3','game','../HTML Games/Red Ball 4 Vol. 3/index.html','img/244.png'],
+  ['Resident Evil','game','../HTML Games/Resident Evil/index.html',''],
+  ['Resident Evil 2','game','../HTML Games/Resident Evil 2/index.html',''],
+  ['Retro Bowl','game','../HTML Games/Retro Bowl/index.html','img/33.png'],
+  ['Retro Bowl College','game','../HTML Games/Retro Bowl College/index.html','img/34.png'],
+  ['Rich Run 3D','game','../HTML Games/Rich Run 3D/index.html','img/421.png'],
+  ['Riddle School','game','../HTML Games/Riddle School/index.html','img/287.png'],
+  ['Riddle School 2','game','../HTML Games/Riddle School 2/index.html','img/288.png'],
+  ['Riddle School 3','game','../HTML Games/Riddle School 3/index.html','img/289.png'],
+  ['Riddle School 4','game','../HTML Games/Riddle School 4/index.html','img/290.png'],
+  ['Riddle School 5','game','../HTML Games/Riddle School 5/index.html','img/291.png'],
+  ['Riddle Transfer','game','../HTML Games/Riddle Transfer/index.html','img/292.png'],
+  ['Riddle Transfer 2','game','../HTML Games/Riddle Transfer 2/index.html','img/293.png'],
+  ['RigBMX','game','../HTML Games/RigBMX/index.html','img/493.png'],
+  ['RigBMX 2','game','../HTML Games/RigBMX 2/index.html','img/494.png'],
+  ['Rio Rex','game','../HTML Games/Rio Rex/index.html',''],
+  ['Road of Fury','game','../HTML Games/Road of Fury/index.html','img/42.png'],
+  ['Robot Invasion','game','../HTML Games/Robot Invasion/index.html','img/403.png'],
+  ['Rogue Sergeant The Final Operation','game','../HTML Games/Rogue Sergeant The Final Operation/index.html',''],
+  ['Rolling Sky','game','../HTML Games/Rolling Sky/index.html','img/553.png'],
+  ['Rolly Vortex','game','../HTML Games/Rolly Vortex/index.html','img/208.png'],
+  ['Room Sort','game','../HTML Games/Room Sort/index.html','img/321.png'],
+  ['Rooftop Snipers','game','../HTML Games/Rooftop Snipers/index.html','img/283.png'],
+  ['Rooftop Snipers 2','game','../HTML Games/Rooftop Snipers 2/index.html','img/490.png'],
+  ['Roulette Hero','game','../HTML Games/Roulette Hero/index.html',''],
+  ['Royal Towers Medieval TD','game','../HTML Games/Royal Towers Medieval TD/index.html',''],
+  ['Ruffle','game','../HTML Games/Ruffle/index.html','img/113.png'],
+  ['Run 1','game','../HTML Games/Run 1/index.html','img/175.png'],
+  ['Run 2','game','../HTML Games/Run 2/index.html','img/176.png'],
+  ['Run 3','game','../HTML Games/Run 3/index.html','img/177.png'],
+  ['Saihate Station','game','../HTML Games/Saihate Station/index.html',''],
+  ['Sam and Max Hit the Road','game','../HTML Games/Sam and Max Hit the Road/index.html',''],
+  ['Sandboxels','game','../HTML Games/Sandboxels/index.html','img/309.png'],
+  ['Sandtris','game','../HTML Games/Sandtris/index.html','img/311.png'],
+  ['sandspiel','game','../HTML Games/sandspiel/index.html','img/317.png'],
+  ['sandstone','game','../HTML Games/sandstone/index.html',''],
+  ['Scary Shawarma 3D','game','../HTML Games/Scary Shawarma 3D/index.html',''],
+  ['Schoolboy Runaway','game','../HTML Games/Schoolboy Runaway/index.html',''],
+  ['Scrap Metal 3','game','../HTML Games/Scrap Metal 3/index.html','img/188.png'],
+  ['Scratch Inc','game','../HTML Games/Scratch Inc/index.html',''],
+  ['Seat Jam 3D','game','../HTML Games/Seat Jam 3D/index.html','img/404.png'],
+  ['Shapez.io','game','../HTML Games/Shapez.io/index.html',''],
+  ['Shift at Midnight','game','../HTML Games/Shift at Midnight/index.html',''],
+  ['Shipo.io','game','../HTML Games/Shipo.io/index.html','img/306.png'],
+  ['Shooting Master','game','../HTML Games/Shooting Master/index.html','img/405.png'],
+  ['Shovel 3D','game','../HTML Games/Shovel 3D/index.html',''],
+  ['ShredSauce','game','../HTML Games/ShredSauce/index.html',''],
+  ['Side Effects','game','../HTML Games/Side Effects/index.html','img/318.png'],
+  ['Silent Hill','game','../HTML Games/Silent Hill/index.html',''],
+  ['Sky Riders','game','../HTML Games/Sky Riders/index.html',''],
+  ['Slender The 8 Pages','game','../HTML Games/Slender The 8 Pages/index.html','img/451.png'],
+  ['Slice it All','game','../HTML Games/Slice it All/index.html','img/128.png'],
+  ['Slime Rancher','game','../HTML Games/Slime Rancher/index.html',''],
+  ['Slime.io','game','../HTML Games/Slime.io/index.html','img/327.png'],
+  ['Slither.io','game','../HTML Games/Slither.io/index.html','img/461.png'],
+  ['Slope','game','../HTML Games/Slope/index.html','img/198.png'],
+  ['Slope 2','game','../HTML Games/Slope 2/index.html','img/368.png'],
+  ['Slowroads','game','../HTML Games/Slowroads/index.html','img/369.png'],
+  ['Smash Karts','game','../HTML Games/Smash Karts/index.html','img/370.png'],
+  ['Snow Rider 3D','game','../HTML Games/Snow Rider 3D/index.html','img/119.png'],
+  ['Snowbattle.io','game','../HTML Games/Snowbattle.io/index.html','img/207.png'],
+  ['Soccer Bros','game','../HTML Games/Soccer Bros/index.html',''],
+  ['Soccer Random','game','../HTML Games/Soccer Random/index.html',''],
+  ['Solar Smash','game','../HTML Games/Solar Smash/index.html','img/118.png'],
+  ['Sonic CD','game','../HTML Games/Sonic CD/index.html',''],
+  ['Sonic Mania','game','../HTML Games/Sonic Mania/index.html',''],
+  ['Sonic Robo Blast 2','game','../HTML Games/Sonic Robo Blast 2/index.html',''],
+  ['Sonic the Hedgehog 2 Community\'s Cut','game','../HTML Games/Sonic the Hedgehog 2 Community_s Cut/index.html','img/549.png'],
+  ['Sonic the Hedgehog 3 Angel Island Remastered','game','../HTML Games/Sonic the Hedgehog 3 Angel Island Remastered/index.html','img/550.png'],
+  ['Sonic.EXE','game','../HTML Games/Sonic.EXE/index.html',''],
+  ['Sonic.EXE (ORIGINAL)','game','../HTML Games/Sonic.EXE (ORIGINAL)/index.html',''],
+  ['Sort the Court','game','../HTML Games/Sort the Court/index.html','img/346.png'],
+  ['Space Funeral','game','../HTML Games/Space Funeral/index.html',''],
+  ['Space Waves','game','../HTML Games/Space Waves/index.html','img/117.png'],
+  ['Spacebar Clicker','game','../HTML Games/Spacebar Clicker/index.html','img/473.png'],
+  ['Speed Stars','game','../HTML Games/Speed Stars/index.html','img/266.png'],
+  ['Spelunky Classic HD','game','../HTML Games/Spelunky Classic HD/index.html',''],
+  ['SpiderDoll','game','../HTML Games/SpiderDoll/index.html','img/347.png'],
+  ['Spiral Roll','game','../HTML Games/Spiral Roll/index.html','img/349.png'],
+  ['SpongeBob SquarePants Krabby Katch','game','../HTML Games/SpongeBob SquarePants Krabby Katch/index.html','img/533.png'],
+  ['SpongeBob SquarePants Land Ho!','game','../HTML Games/SpongeBob SquarePants Land Ho!/index.html','img/526.png'],
+  ['SpongeBob SquarePants Sandy\'s Sponge Stacker','game','../HTML Games/SpongeBob SquarePants Sandy_s Sponge Stacker/index.html','img/529.png'],
+  ['SpongeBob SquarePants SpongeBob Run','game','../HTML Games/SpongeBob SquarePants SpongeBob Run/index.html','img/527.png'],
+  ['SpongeBob SquarePants Squidward\'s Sizzlin\' Scare','game','../HTML Games/SpongeBob SquarePants Squidward_s Sizzlin_ Scare/index.html','img/528.png'],
+  ['SpongeBob SquarePants Tasty Pastry Party','game','../HTML Games/SpongeBob SquarePants Tasty Pastry Party/index.html','img/530.png'],
+  ['SpongeBob SquarePants The Kah-Ray-Tay Squid','game','../HTML Games/SpongeBob SquarePants The Kah-Ray-Tay Squid/index.html','img/531.png'],
+  ['SpongeBob SquarePants WereSquirrel','game','../HTML Games/SpongeBob SquarePants WereSquirrel/index.html','img/532.png'],
+  ['Sprunki','game','../HTML Games/Sprunki/index.html','img/9.png'],
+  ['Stacky Dash','game','../HTML Games/Stacky Dash/index.html','img/18.png'],
+  ['State.io','game','../HTML Games/State.io/index.html','img/161.png'],
+  ['Station 141','game','../HTML Games/Station 141/index.html','img/452.png'],
+  ['Station Saturn','game','../HTML Games/Station Saturn/index.html','img/453.png'],
+  ['Steal A Brainrot','game','../HTML Games/Steal A Brainrot/index.html','img/479.png'],
+  ['Steal Brainrot Online','game','../HTML Games/Steal Brainrot Online/index.html',''],
+  ['Stick Slasher','game','../HTML Games/Stick Slasher/index.html',''],
+  ['Stick War Legacy','game','../HTML Games/Stick War Legacy/index.html',''],
+  ['Stick With It','game','../HTML Games/Stick With It/index.html','img/502.png'],
+  ['Stickman Boost','game','../HTML Games/Stickman Boost/index.html','img/372.png'],
+  ['Stickman Climb','game','../HTML Games/Stickman Climb/index.html','img/373.png'],
+  ['Stickman Destruction','game','../HTML Games/Stickman Destruction/index.html',''],
+  ['Stickman Duel','game','../HTML Games/Stickman Duel/index.html',''],
+  ['Stickman Fight Ragdoll','game','../HTML Games/Stickman Fight Ragdoll/index.html','img/371.png'],
+  ['Stickman Golf','game','../HTML Games/Stickman Golf/index.html','img/374.png'],
+  ['Stickman Hook','game','../HTML Games/Stickman Hook/index.html','img/11.png'],
+  ['Stickman Kombat 2D','game','../HTML Games/Stickman Kombat 2D/index.html',''],
+  ['Stickman and Guns','game','../HTML Games/Stickman and Guns/index.html',''],
+  ['Stone Grass Mowing Simulator','game','../HTML Games/Stone Grass Mowing Simulator/index.html',''],
+  ['Subway Surfers','game','../HTML Games/Subway Surfers/index.html',''],
+  ['Super Mario 63','game','../HTML Games/Super Mario 63/index.html','img/314.png'],
+  ['Super Mario 64','game','../HTML Games/Super Mario 64/index.html',''],
+  ['Super Mario Bros','game','../HTML Games/Super Mario Bros/index.html','img/508.png'],
+  ['Super Mario Bros. Remastered','game','../HTML Games/Super Mario Bros. Remastered/index.html',''],
+  ['Super Monkey Ball 1and2','game','../HTML Games/Super Monkey Ball 1and2/index.html',''],
+  ['Super Smash Flash','game','../HTML Games/Super Smash Flash/index.html',''],
+  ['Super Star Car','game','../HTML Games/Super Star Car/index.html',''],
+  ['Superhot','game','../HTML Games/Superhot/index.html','img/233.png'],
+  ['Supermarket 3D','game','../HTML Games/Supermarket 3D/index.html','img/406.png'],
+  ['Supreme Duelist','game','../HTML Games/Supreme Duelist/index.html','img/19.png'],
+  ['Survival Race','game','../HTML Games/Survival Race/index.html','img/122.png'],
+  ['Survive to Victory','game','../HTML Games/Survive to Victory/index.html','img/407.png'],
+  ['Survivor.io','game','../HTML Games/Survivor.io/index.html',''],
+  ['Sushi Roll','game','../HTML Games/Sushi Roll/index.html','img/322.png'],
+  ['Swordfight!!','game','../HTML Games/Swordfight!!/index.html','img/513.png'],
+  ['Swords and Souls','game','../HTML Games/Swords and Souls/index.html','img/178.png'],
+  ['Tag','game','../HTML Games/Tag/index.html',''],
+  ['Tall Man Run','game','../HTML Games/Tall Man Run/index.html','img/20.png'],
+  ['Tall.io','game','../HTML Games/Tall.io/index.html',''],
+  ['Tanuki Sunset','game','../HTML Games/Tanuki Sunset/index.html','img/305.png'],
+  ['Tattletail','game','../HTML Games/Tattletail/index.html',''],
+  ['Teen Titans GO! Jump Jousts','game','../HTML Games/Teen Titans GO! Jump Jousts/index.html','img/534.png'],
+  ['Teen Titans GO! Jump Jousts 2','game','../HTML Games/Teen Titans GO! Jump Jousts 2/index.html','img/535.png'],
+  ['Telekinesis','game','../HTML Games/Telekinesis/index.html','img/411.png'],
+  ['Telekinesis Attack','game','../HTML Games/Telekinesis Attack/index.html','img/408.png'],
+  ['Telekinesis Car','game','../HTML Games/Telekinesis Car/index.html','img/409.png'],
+  ['Telekinesis Drive','game','../HTML Games/Telekinesis Drive/index.html','img/410.png'],
+  ['Temple Run 2','game','../HTML Games/Temple Run 2/index.html','img/10.png'],
+  ['Terraria','game','../HTML Games/Terraria/index.html',''],
+  ['Territorial.io','game','../HTML Games/Territorial.io/index.html','img/303.png'],
+  ['Tetris','game','../HTML Games/Tetris/index.html',''],
+  ['Tetris (2)','game','../HTML Games/Tetris (2)/index.html',''],
+  ['That\'s Not My Neighbor','game','../HTML Games/That_s Not My Neighbor/index.html','img/216.png'],
+  ['The Deadseat','game','../HTML Games/The Deadseat/index.html','img/458.png'],
+  ['The Impossible Quiz','game','../HTML Games/The Impossible Quiz/index.html','img/507.png'],
+  ['The Legend of Zelda Majora\'s Mask','game','../HTML Games/The Legend of Zelda Majora_s Mask/index.html',''],
+  ['The Legend of Zelda Ocarina of Time','game','../HTML Games/The Legend of Zelda Ocarina of Time/index.html',''],
+  ['The Man In The Window','game','../HTML Games/The Man In The Window/index.html','img/459.png'],
+  ['The Oregon Trail','game','../HTML Games/The Oregon Trail/index.html',''],
+  ['The World\'s Hardest Game','game','../HTML Games/The World_s Hardest Game/index.html','img/103.png'],
+  ['The World\'s Hardest Game 3','game','../HTML Games/The World_s Hardest Game 3/index.html','img/104.png'],
+  ['The World\'s Hardest Game 4','game','../HTML Games/The World_s Hardest Game 4/index.html','img/105.png'],
+  ['They Are Coming','game','../HTML Games/They Are Coming/index.html','img/348.png'],
+  ['This Is The Only Level','game','../HTML Games/This Is The Only Level/index.html','img/106.png'],
+  ['This Is The Only Level 2','game','../HTML Games/This Is The Only Level 2/index.html','img/107.png'],
+  ['Three Goblets','game','../HTML Games/Three Goblets/index.html',''],
+  ['TileTopia','game','../HTML Games/TileTopia/index.html','img/329.png'],
+  ['Time Shooter 1','game','../HTML Games/Time Shooter 1/index.html','img/199.png'],
+  ['Time Shooter 2','game','../HTML Games/Time Shooter 2/index.html','img/200.png'],
+  ['Time Shooter 3 SWAT','game','../HTML Games/Time Shooter 3 SWAT/index.html','img/201.png'],
+  ['Tiny Fishing','game','../HTML Games/Tiny Fishing/index.html','img/108.png'],
+  ['Tomb Of The Mask','game','../HTML Games/Tomb Of The Mask/index.html','img/109.png'],
+  ['Tomodachi Collection','game','../HTML Games/Tomodachi Collection/index.html','img/510.png'],
+  ['Toss The Turtle','game','../HTML Games/Toss The Turtle/index.html','img/110.png'],
+  ['Touhou Luminous Strike','game','../HTML Games/Touhou Luminous Strike/index.html','img/518.png'],
+  ['Touhou Mother','game','../HTML Games/Touhou Mother/index.html','img/523.png'],
+  ['Tower Crash 3D','game','../HTML Games/Tower Crash 3D/index.html','img/162.png'],
+  ['Toy Rider','game','../HTML Games/Toy Rider/index.html',''],
+  ['Traffic Racer','game','../HTML Games/Traffic Racer/index.html',''],
+  ['Traffic Rider','game','../HTML Games/Traffic Rider/index.html',''],
+  ['Trivia Crack','game','../HTML Games/Trivia Crack/index.html','img/163.png'],
+  ['Tube Jumpers','game','../HTML Games/Tube Jumpers/index.html','img/111.png'],
+  ['Tug of War with Cars','game','../HTML Games/Tug of War with Cars/index.html','img/413.png'],
+  ['Tunnel Rush','game','../HTML Games/Tunnel Rush/index.html','img/206.png'],
+  ['Turbo Stars','game','../HTML Games/Turbo Stars/index.html','img/21.png'],
+  ['Twerk Race 3D','game','../HTML Games/Twerk Race 3D/index.html','img/414.png'],
+  ['Twisted Rope 3D','game','../HTML Games/Twisted Rope 3D/index.html','img/415.png'],
+  ['ULTRAKILL','game','../HTML Games/ULTRAKILL/index.html','img/196.png'],
+  ['UNDERWHEELS','game','../HTML Games/UNDERWHEELS/index.html','img/492.png'],
+  ['Ultrapool','game','../HTML Games/Ultrapool/index.html',''],
+  ['Undertale','game','../HTML Games/Undertale/index.html',''],
+  ['Undertale Last Breath','game','../HTML Games/Undertale Last Breath/index.html',''],
+  ['Undertale Last Breath PHASE THREE','game','../HTML Games/Undertale Last Breath PHASE THREE/index.html',''],
+  ['Undertale Yellow','game','../HTML Games/Undertale Yellow/index.html','img/456.png'],
+  ['Untitled Goose Game','game','../HTML Games/Untitled Goose Game/index.html',''],
+  ['VS Rewrite ROUND 2','game','../HTML Games/VS Rewrite ROUND 2/index.html',''],
+  ['Vex 1','game','../HTML Games/Vex 1/index.html','img/45.png'],
+  ['Vex 2','game','../HTML Games/Vex 2/index.html','img/46.png'],
+  ['Vex 3','game','../HTML Games/Vex 3/index.html','img/47.png'],
+  ['Vex 3 XMAS','game','../HTML Games/Vex 3 XMAS/index.html','img/48.png'],
+  ['Vex 4','game','../HTML Games/Vex 4/index.html','img/49.png'],
+  ['Vex 5','game','../HTML Games/Vex 5/index.html','img/50.png'],
+  ['Vex 6','game','../HTML Games/Vex 6/index.html','img/51.png'],
+  ['Vex 7','game','../HTML Games/Vex 7/index.html','img/52.png'],
+  ['Vex 8','game','../HTML Games/Vex 8/index.html','img/53.png'],
+  ['Vex Challenges','game','../HTML Games/Vex Challenges/index.html','img/54.png'],
+  ['Vex X3M','game','../HTML Games/Vex X3M/index.html','img/55.png'],
+  ['Vex X3M 2','game','../HTML Games/Vex X3M 2/index.html','img/56.png'],
+  ['Volley Random','game','../HTML Games/Volley Random/index.html',''],
+  ['Wall Crawler','game','../HTML Games/Wall Crawler/index.html','img/416.png'],
+  ['War Regions','game','../HTML Games/War Regions/index.html','img/417.png'],
+  ['War The Knights','game','../HTML Games/War The Knights/index.html','img/284.png'],
+  ['Waterworks!','game','../HTML Games/Waterworks!/index.html',''],
+  ['We Become What We Behold','game','../HTML Games/We Become What We Behold/index.html',''],
+  ['Weapon Craft Run','game','../HTML Games/Weapon Craft Run/index.html','img/418.png'],
+  ['Weapon Scale','game','../HTML Games/Weapon Scale/index.html','img/420.png'],
+  ['Weapon Upgrade Rush','game','../HTML Games/Weapon Upgrade Rush/index.html','img/419.png'],
+  ['WebFishing','game','../HTML Games/WebFishing/index.html','img/423.png'],
+  ['Wheely','game','../HTML Games/Wheely/index.html','img/245.png'],
+  ['Wheely 2','game','../HTML Games/Wheely 2/index.html','img/246.png'],
+  ['Wheely 3','game','../HTML Games/Wheely 3/index.html','img/247.png'],
+  ['Wheely 4','game','../HTML Games/Wheely 4/index.html','img/248.png'],
+  ['Wheely 5','game','../HTML Games/Wheely 5/index.html','img/249.png'],
+  ['Wheely 6','game','../HTML Games/Wheely 6/index.html','img/250.png'],
+  ['Wheely 7','game','../HTML Games/Wheely 7/index.html','img/251.png'],
+  ['Wheely 8','game','../HTML Games/Wheely 8/index.html','img/252.png'],
+  ['Witch\'s Heart','game','../HTML Games/Witch_s Heart/index.html',''],
+  ['Wordle+','game','../HTML Games/Wordle+/index.html',''],
+  ['World Box','game','../HTML Games/World Box/index.html','img/174.png'],
+  ['Worst Time Simulator','game','../HTML Games/Worst Time Simulator/index.html',''],
+  ['Yandere Simulator','game','../HTML Games/Yandere Simulator/index.html','img/554.png'],
+  ['Your Only Move Is HUSTLE','game','../HTML Games/Your Only Move Is HUSTLE/index.html',''],
+  ['Yume Nikki','game','../HTML Games/Yume Nikki/index.html','img/433.png'],
+  ['game','game','../HTML Games/game/index.html',''],
+  ['game inside a game inside a game inside a game inside a game inside a game','game','../HTML Games/game inside a game inside a game inside a game inside a game inside a game/index.html',''],
+  ['groon groon, babey!','game','../HTML Games/groon groon, babey!/index.html','img/495.png'],
+  ['ihnmaims','game','../HTML Games/ihnmaims/index.html',''],
+  ['myTeardrop','game','../HTML Games/myTeardrop/index.html','img/540.png'],
+  ['n-gon','game','../HTML Games/n-gon/index.html','img/180.png'],
+  ['osu!','game','../HTML Games/osu!/index.html','img/130.png'],
+
+  ['Soundboard','tool','../Tools/Soundboard/index.html','img/179.png'],
+  ['ai','tool','../Tools/ai/index.html','img/253.png'],
+  ['DON_T YOU LECTURE ME','tool','../Tools/DON_T YOU LECTURE ME/index.html','img/352.png'],
+  ['Code Editor','tool','../Tools/Code Editor/index.html','img/429.png'],
+
+  ['EmulatorJS','emulator','../Emulator/Emulator/EmulatorJS/index.html','img/87.png'],
+  ['WebRetro','emulator','../Emulator/Emulator/Webretro/index.html','img/webretro.png'],
+];
+
+/* ══════════════════════════════
+   CARD COLORS
+══════════════════════════════ */
+const CC={game:['#1a2e4a','#60a5fa'],tool:['#1a3a1a','#4ade80'],emulator:['#3a1a1a','#f87171']};
+function initials(n){return n.trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'?'}
+function mkPh(name,cat){
+  const[bg,fg]=CC[cat]||['#1e1e3a','#a855f7'];
+  const d=document.createElement('div');d.className='ph';
+  d.style.cssText='background:linear-gradient(135deg,'+bg+',#0a0a0f);color:'+fg+';opacity:.82;';
+  d.textContent=initials(name);return d;
+}
+function buildCard(row){
+  const[name,cat,path,img]=row;
+  const a=document.createElement('a');a.className='card';a.href=path;a.target='_blank';a.rel='noopener';
+  const ct=document.createElement('div');ct.className='ct';
+  if(img){
+    const el=document.createElement('img');el.src=img;el.alt=name;
+    el.onerror=function(){this.style.display='none';ct.insertBefore(mkPh(name,cat),this);};
+    ct.appendChild(el);
+  }else{ct.appendChild(mkPh(name,cat));}
+  const cr=document.createElement('span');
+  cr.className='cr '+({game:'cg',tool:'ct2',emulator:'ce'}[cat]||'cg');
+  cr.textContent=cat==='emulator'?'EMU':cat.toUpperCase();
+  ct.appendChild(cr);
+  const ci=document.createElement('div');ci.className='ci';
+  const cn=document.createElement('div');cn.className='cn';cn.textContent=name;
+  ci.appendChild(cn);a.appendChild(ct);a.appendChild(ci);return a;
+}
+
+/* ══════════════════════════════
+   RENDER
+══════════════════════════════ */
+let filt='all',q='';
+function render(){
+  const grid=document.getElementById('grid');
+  const ql=q.toLowerCase();
+  const out=items.filter(r=>(filt==='all'||r[1]===filt)&&(!ql||r[0].toLowerCase().includes(ql)));
+  grid.innerHTML='';
+  if(!out.length){
+    const e=document.createElement('div');e.className='empty';
+    e.innerHTML='<div class="ei">&#128269;</div>No results for &ldquo;'+q+'&rdquo;';
+    grid.appendChild(e);
+  }else{
+    out.forEach((row,i)=>{
+      const c=buildCard(row);c.style.animationDelay=Math.min(i*.012,.3)+'s';
+      grid.appendChild(c);
+    });
+  }
+  document.getElementById('cn').textContent=out.length;
+}
+function pills(){
+  document.getElementById('pa').textContent=items.length;
+  document.getElementById('pg').textContent=items.filter(r=>r[1]==='game').length;
+  document.getElementById('pt').textContent=items.filter(r=>r[1]==='tool').length;
+  document.getElementById('pe').textContent=items.filter(r=>r[1]==='emulator').length;
+}
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');filt=btn.dataset.f;render();
+  });
+});
+document.getElementById('search').addEventListener('input',e=>{q=e.target.value;render();});
+
+/* ══════════════════════════════
+   SETTINGS MODAL
+══════════════════════════════ */
+const overlay=document.getElementById('modal-overlay');
+document.getElementById('settings-btn').addEventListener('click',()=>{
+  overlay.classList.toggle('open');
+  // Pre-fill tab name
+  document.getElementById('tab-name-input').value=document.title;
+});
+document.getElementById('modal-close').addEventListener('click',()=>overlay.classList.remove('open'));
+overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open');});
+
+/* ── TAB NAME ── */
+document.getElementById('apply-tab-name').addEventListener('click',()=>{
+  const v=document.getElementById('tab-name-input').value.trim();
+  if(v){document.title=v;}
+});
+document.getElementById('tab-name-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter')document.getElementById('apply-tab-name').click();
+});
+
+/* ── THEME ── */
+let currentTheme='default';
+document.getElementById('theme-grid').addEventListener('click',e=>{
+  const card=e.target.closest('.theme-card');
+  if(!card)return;
+  const theme=card.dataset.theme;
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  if(theme==='default'){document.documentElement.removeAttribute('data-theme');}
+  else{document.documentElement.setAttribute('data-theme',theme);}
+  currentTheme=theme;
+});
+
+/* ══════════════════════════════
+   ANNOUNCEMENTS
+   ── Add your announcements below ──
+   Each line is one announcement.
+   Example: 'New games added this week!',
+══════════════════════════════ */
+const announcements = [
+  'They tried to take us down!',
+  'We are back baby!',
+];
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function renderAnnouncements(){
+  const display=document.getElementById('ann-display');
+  display.innerHTML='';
+  if(!announcements.length){
+    display.innerHTML='<span class="ann-empty">No announcements — add some in the code!</span>';
+    return;
+  }
+  announcements.forEach(txt=>{
+    const item=document.createElement('div');item.className='ann-item';
+    item.innerHTML='<span>'+escHtml(txt)+'</span>';
+    display.appendChild(item);
+  });
+}
+
+/* ── INIT ── */
+pills();render();renderAnnouncements();
+</script>
+</body>
+</html>
