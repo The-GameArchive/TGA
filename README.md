@@ -1,12 +1,27 @@
 # TGA
-The TGA is short for The Game Archive. Me and a few of my friends loved playing games in school so me and my friend have spent some time making this, The Game Archive. Yes, its Unblocked Games so go ahead and use it for school if you want.
+# **How to use:**
+
+## **TGALauncher Route:**
+
+How to open the TGALauncher. Open the TGALauncher Folder and Open the index.html file in your browser. The TGALauncher allows you to open any game’s, emulator’s, or tool’s html file that you can find in the TGA in another window. The TGALauncher is recommended but if for some reason you want to open a specific html file of a game, emulator, or tool then you can go these other routes
+
+## **Specific Game Route:**
+
+HTML Games\(any game you can find)\index.html
+
+## **Emulator Route:**
+
+Emulator\Emulator\(Either WebRetro or EmulatorJS)\index.html
+
+## **Tool Route:**
+
+Tools\(pick a tool)\index.html
 
 
-I may update the TGA and fix any problems you guys may have with it
+# **What is the TGA:**
+
+My friend made The Game Archive. It was a compilation of games made out of Html. I took the idea and ran with the TGA, a shortened name of The Game Archive, and i added a bunch of games to it.
+
+originally this was made to bypass our school’s blocking system but they entirely blocked htmls. now i am making this a github repo for people to use the TGA as the please.
 
 
-How to use:
-
-If you want to go the route of going through the TGALauncher to load your game then click the folder and open the index.html through chrome or any browsing serivce.
-
-Any Game you find you can open it by opening the index.html, same with the emulators.
