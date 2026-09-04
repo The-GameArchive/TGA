@@ -1,3 +1,4 @@
+TGA/Roms/Nintendo[[:space:]]DS/**/rom.nds filter=lfs diff=lfs merge=lfs -text
  filter=lfs diff=lfs merge=lfs -text
 TGA/Roms/Nintendo[[:space:]]DS/Rhythm[[:space:]]Heaven/rom.nds filter=lfs diff=lfs merge=lfs -text
 TGA/Roms/Nintendo[[:space:]]DS/Pokemon[[:space:]]White/rom.nds filter=lfs diff=lfs merge=lfs -text
